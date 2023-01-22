@@ -65,6 +65,8 @@ Please, do **not** put these data files into Git; they are big. Do **not** copy 
 
 3. Briefly describe what bash commands `zcat`, `zless`, `zmore`, and `zgrep` do.
 
+Zcat is a bash command for viewing the contents of a compressed file without decompressing it. Zless is a command that creates a soft-copy terminal to examine a compressed or plain text file one screenful at a time without decompressing. Zmore does the same thing to compressed files but has less functionalities, only browsing downwards. The zgrep command searches for particular expressions from a given file even if it's compressed. 
+
 4. What's the output of the following bash script?
 ```{bash}
 #| eval: false
