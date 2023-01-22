@@ -104,14 +104,15 @@ done
 
 2. What's the difference between the following two commands?
 ```{bash}
-#| eval: false
+#| eval: true
 echo 'hello, world' > test1.txt
 ```
 and
 ```{bash}
-#| eval: false
+#| eval: true
 echo 'hello, world' >> test2.txt
 ```
+'>' is used to overwrite or create a file if it doesn't exist and '>>' is used to append to an existing file, or create it if it doesn't already exist.
 
 3. Using your favorite text editor (e.g., `vi`), type the following and save the file as `middle.sh`:
 ```{bash eval=FALSE}
@@ -122,10 +123,12 @@ head -n "$2" "$1" | tail -n "$3"
 ```
 Using `chmod` to make the file executable by the owner, and run
 ```{bash}
-#| eval: false
+#| eval: true
+chmod 751 middle.sh
 ./middle.sh pg42671.txt 20 5
 ```
 Explain the output. Explain the meaning of `"$1"`, `"$2"`, and `"$3"` in this shell script. Why do we need the first line of the shell script?
+The output is the last five lines of the first 20 lines of the text file. "$1" is the file name, "$2" takes the first 20 lines, "$3" takes the last 5 lines of those 20 lines. We need the first line of the shell script to run in the proper shell. 
 
 ## Q5. More fun with Linux
 
