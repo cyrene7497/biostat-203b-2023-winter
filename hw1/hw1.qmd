@@ -77,13 +77,22 @@ Zcat is a bash command for viewing the contents of a compressed file without dec
 
 4. What's the output of the following bash script?
 ```{bash}
-#| eval: false
+#| eval: true
 for datafile in ~/mimic/core/*.gz
 do
   ls -l $datafile
 done
 ```
+The output of `ls -l` is the detailed contents of the directory. In this case, the loop calls all the files ending in `.gz` within the `core` module within the `mimic` folder. Then `ls -l` outputs the permissions, owner, size and date and time last modified of each file ending in `.gz` within that folder. 
+
 Display the number of lines in each data file using a similar loop.
+```{bash}
+for datafile in ~/mimic/core/*.gz
+do
+  gzcat $datafile | wc -l
+done
+```
+The `admissions` file has 523,741 lines, the `patients` file has 382,279 lines, and the `transfers` file has 2,189,536 lines. 
 
 5. Display the first few lines of `admissions.csv.gz`. How many rows are in this data file? How many unique patients (identified by `subject_id`) are in this data file? (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `sort`, `uniq`, `wc`, and so on.)
 
