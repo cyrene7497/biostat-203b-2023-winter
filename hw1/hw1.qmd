@@ -54,7 +54,7 @@ CITI Completion Certificate: https://www.citiprogram.org/verify/?wf39be852-045b-
 
 1. The `~/mimic` folder within the Docker container contains data sets from MIMIC-IV. Refer to the documentation <https://mimic.mit.edu/docs/iv/> for details of data files.  
 ```{bash}
-#| eval: false
+#| eval: true
 ls -l ~/mimic
 ```
 Please, do **not** put these data files into Git; they are big. Do **not** copy them into your directory. Do **not** decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder `~/mimic` directly in following exercises. 
