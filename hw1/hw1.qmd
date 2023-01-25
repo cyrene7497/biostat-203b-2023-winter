@@ -62,6 +62,14 @@ Please, do **not** put these data files into Git; they are big. Do **not** copy 
   Use Bash commands to answer following questions.
 
 2. Display the contents in the folders `core`, `hosp`, `icu`. Why are these data files distributed as `.csv.gz` files instead of `.csv` (comma separated values) files? Read the page <https://mimic.mit.edu/docs/iv/> to understand what's in each folder.
+```{bash}
+ls ~/mimic/core
+ls ~/mimic/hosp
+ls ~/mimic/icu
+```
+All the data in these folders are in `csv.gz` format, rather than `.csv`. The `csv.gz` is a `.csv` file compressed with the `gzip` utility for storage. Since MIMIC-VI encompasses a large amount of data, it's preferable to store data in this compressed version.
+
+The `hosp` module had data obtained from the hospital-wide electronic health record. This information includes patient and admission information, laboratory results, and billed diagnoses. The `icu` module provides data for emergency department patients collected while they're in the emergency department. This information includes why they were admitted, their triage assessment results, vital signs, and any medicine reconcilliation. The `core` module has been removed from the current version of MIMIC-IV so there isn't much documentation on it on their website. The core module had information on admissions, patients, and transfers, which are now included in the `hosp` module. 
 
 3. Briefly describe what bash commands `zcat`, `zless`, `zmore`, and `zgrep` do.
 
