@@ -103,6 +103,24 @@ gzcat ~/mimic/core/admissions.csv.gz | tail -n+2 | sort -u -t, -k1,1 | wc -l
 There are 523,741 rows in this data file. It includes 256,878 unique patients identified by `subject_id` which is the first columm in the data file, seen in the first few lines.
 
 6. What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq -c`, `wc`, and so on.)
+```{bash}
+gzcat ~/mimic/core/admissions.csv.gz | tail -n+2 | awk -F, '{ print $6}' | sort | uniq -c
+```
+The possible values and counts of the variable `admission_type` are 7,254 entries of `Ambulatory Observation`, 21,581 entries of `Direct Emer.`, 19,991 entries of `Direct Observation`, 72,072 entries of `Elective`, 100,445 entries of `EU Observation`, 157,896 entries of `EW Emer.`, 55,497 entries of `Observational Admit`, 41,074 entries of `Surgical Save Day Admission`, and 47,930 of `Urgent`. 
+```{bash}
+gzcat ~/mimic/core/admissions.csv.gz | tail -n+2 | awk -F, '{ print $7}' | sort | uniq -c
+```
+The values and counts of the variable `admission_location` are 60,435 empty entries, 191 entries of `Ambulatory Surgery Transfer`, 10,670 entries of `Clinical Referral`, 245,744 entries of `Emergency Room`, 379 entries of `Information Not Available`, 4,467 entries of `Internal Transfer to or from Psych`, 6,067 entries of `PACU`, 127,494 entries of `Physician Referral`, 8,449 entries of `Procedure Site`, 39,121 entries of `Transfer From Hospital`, 4,063 entries of `Transfer From Skilled Nursing Facility`, and 16,660 entries of `Walk-in/Self Referral`. 
+```{bash}
+gzcat ~/mimic/core/admissions.csv.gz | tail -n+2 | awk -F, '{ print $9}' | sort | uniq -c
+```
+The values and counts of the variable `insurance` are 50,850 entries of `Medicaid`, 171,360 entries of `Medicare`, and 301,530 entries of `Other`. 
+
+```{bash}
+gzcat ~/mimic/core/admissions.csv.gz | tail -n+2 | awk -F, '{ print $12}' | sort | uniq -c
+```
+The values and counts of the variable `ethnicity` are 
+
 
 ## Q4. Who's popular in Price and Prejudice
 
