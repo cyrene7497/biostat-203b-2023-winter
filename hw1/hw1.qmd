@@ -95,6 +95,12 @@ done
 The `admissions` file has 523,741 lines, the `patients` file has 382,279 lines, and the `transfers` file has 2,189,536 lines. 
 
 5. Display the first few lines of `admissions.csv.gz`. How many rows are in this data file? How many unique patients (identified by `subject_id`) are in this data file? (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `sort`, `uniq`, `wc`, and so on.)
+```{bash}
+gzcat ~/mimic/core/admissions.csv.gz | head -5
+gzcat ~/mimic/core/admissions.csv.gz | awk 'END { print NR }'
+gzcat ~/mimic/core/admissions.csv.gz | tail -n+2 | sort -u -t, -k1,1 | wc -l
+```
+There are 523,741 rows in this data file. It includes 256,878 unique patients identified by `subject_id` which is the first columm in the data file, seen in the first few lines.
 
 6. What are the possible values taken by each of the variable `admission_type`, `admission_location`, `insurance`, and `ethnicity`? Also report the count for each unique value of these variables. (Hint: combine Linux commands `zcat`, `head`/`tail`, `awk`, `uniq -c`, `wc`, and so on.)
 
