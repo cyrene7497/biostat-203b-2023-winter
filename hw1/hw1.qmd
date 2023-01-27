@@ -229,7 +229,7 @@ Linux commands.
 for char in Elizabeth Jane Lydia Darcy
 do
   echo $char:
-  grep -o -i $char pg42671.txt | wc -l
+  tail -n +60 pg42671.txt | grep -o -i $char | wc -l
 done
 ```
 
