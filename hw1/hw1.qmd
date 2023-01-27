@@ -232,6 +232,10 @@ do
   tail -n +60 pg42671.txt | grep -o -i $char | wc -l
 done
 ```
+**Response:** The actual beginning of the text is on line 60, so we first take 
+the tail of the text file (since the Author's name is Jane, we also have to 
+account for this in the count). So the number of times the characters Elizabeth,
+Jane, Lydia, and Darcy are 634, 292, 171, and 418 respecticaly.
 
 2. What's the difference between the following two commands?
 ```{bash}
