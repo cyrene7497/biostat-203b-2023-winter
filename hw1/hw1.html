@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Cyrene Arputhasamy (705527395)">
+
+<title>Biostat 203B Homework 1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="hw1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="hw1_files/libs/quarto-html/quarto.js"></script>
+<script src="hw1_files/libs/quarto-html/popper.min.js"></script>
+<script src="hw1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="hw1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="hw1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="hw1_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="hw1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="hw1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="hw1_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#q1.-gitgithub" id="toc-q1.-gitgithub" class="nav-link active" data-scroll-target="#q1.-gitgithub"><span class="toc-section-number">1</span>  Q1. Git/GitHub</a></li>
+  <li><a href="#q2.-data-ethics-training" id="toc-q2.-data-ethics-training" class="nav-link" data-scroll-target="#q2.-data-ethics-training"><span class="toc-section-number">2</span>  Q2. Data ethics training</a></li>
+  <li><a href="#q3.-linux-shell-commands" id="toc-q3.-linux-shell-commands" class="nav-link" data-scroll-target="#q3.-linux-shell-commands"><span class="toc-section-number">3</span>  Q3. Linux Shell Commands</a></li>
+  <li><a href="#q4.-whos-popular-in-price-and-prejudice" id="toc-q4.-whos-popular-in-price-and-prejudice" class="nav-link" data-scroll-target="#q4.-whos-popular-in-price-and-prejudice"><span class="toc-section-number">4</span>  Q4. Who’s popular in Price and Prejudice</a></li>
+  <li><a href="#q5.-more-fun-with-linux" id="toc-q5.-more-fun-with-linux" class="nav-link" data-scroll-target="#q5.-more-fun-with-linux"><span class="toc-section-number">5</span>  Q5. More fun with Linux</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Biostat 203B Homework 1</h1>
+<p class="subtitle lead">Due Jan 27 @ 11:59PM</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Cyrene Arputhasamy (705527395) </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Display machine information for reproducibility:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.2.2 (2022-10-31)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS Ventura 13.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+ [1] compiler_4.2.2  magrittr_2.0.3  fastmap_1.1.0   cli_3.4.1      
+ [5] tools_4.2.2     htmltools_0.5.3 rstudioapi_0.14 yaml_2.3.6     
+ [9] stringi_1.7.8   rmarkdown_2.18  knitr_1.41      stringr_1.4.1  
+[13] xfun_0.35       digest_0.6.30   jsonlite_1.8.3  rlang_1.0.6    
+[17] evaluate_0.18  </code></pre>
+</div>
+</div>
+<section id="q1.-gitgithub" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="q1.-gitgithub"><span class="header-section-number">1</span> Q1. Git/GitHub</h2>
+<p><strong>No handwritten homework reports are accepted for this course.</strong> We work with Git and GitHub. Efficient and abundant use of Git, e.g., frequent and well-documented commits, is an important criterion for grading your homework.</p>
+<ol type="1">
+<li><p>Apply for the <a href="https://education.github.com/pack">Student Developer Pack</a> at GitHub using your UCLA email. You’ll get GitHub Pro account for free (unlimited public and private repositories). <strong>Done</strong></p></li>
+<li><p>Create a <strong>private</strong> repository <code>biostat-203b-2023-winter</code> and add <code>Hua-Zhou</code> and <code>tomokiokuno0528</code> as your collaborators with write permission. <strong>Done</strong></p></li>
+<li><p>Top directories of the repository should be <code>hw1</code>, <code>hw2</code>, … Maintain two branches <code>master</code> and <code>develop</code>. The <code>develop</code> branch will be your main playground, the place where you develop solution (code) to homework problems and write up report. The <code>master</code> branch will be your presentation area. Submit your homework files (Quarto file <code>qmd</code>, <code>html</code> file converted by Quarto, all code and extra data sets to reproduce results) in <code>main</code> branch. <strong>Created the two branches</strong></p></li>
+<li><p>After each homework due date, course reader and instructor will check out your <code>master</code> branch for grading. Tag each of your homework submissions with tag names <code>hw1</code>, <code>hw2</code>, … Tagging time will be used as your submission time. That means if you tag your <code>hw1</code> submission after deadline, penalty points will be deducted for late submission.</p></li>
+<li><p>After this course, you can make this repository public and use it to demonstrate your skill sets on job market.</p></li>
+</ol>
+</section>
+<section id="q2.-data-ethics-training" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="q2.-data-ethics-training"><span class="header-section-number">2</span> Q2. Data ethics training</h2>
+<p>This exercise (and later in this course) uses the <a href="https://mimic-iv.mit.edu">MIMIC-IV data</a>, a freely accessible critical care database developed by the MIT Lab for Computational Physiology. Follow the instructions at <a href="https://mimic.mit.edu/docs/gettingstarted/" class="uri">https://mimic.mit.edu/docs/gettingstarted/</a> to (1) complete the CITI <code>Data or Specimens Only Research</code> course and (2) obtain the PhysioNet credential for using the MIMIC-IV data. Display the verification links to your completion report and completion certificate here. (Hint: The CITI training takes a couple hours and the PhysioNet credentialing takes a couple days; do not leave it to the last minute.)</p>
+<p><strong>CITI Completion Report:</strong> https://www.citiprogram.org/verify/?k8d770661-be97-40a3-b679-e00c20736162-53803788</p>
+<p><strong>CITI Completion Certificate:</strong> https://www.citiprogram.org/verify/?wf39be852-045b-4a61-9745-3dd9fe63d6f8-53803788</p>
+</section>
+<section id="q3.-linux-shell-commands" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="q3.-linux-shell-commands"><span class="header-section-number">3</span> Q3. Linux Shell Commands</h2>
+<ol type="1">
+<li>The <code>~/mimic</code> folder within the Docker container contains data sets from MIMIC-IV. Refer to the documentation <a href="https://mimic.mit.edu/docs/iv/" class="uri">https://mimic.mit.edu/docs/iv/</a> for details of data files.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> ~/mimic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>lrwxr-xr-x  1 carputhasamy  staff  33 Jan 25 15:18 /Users/carputhasamy/mimic -&gt; /Users/carputhasamy/Desktop/mimic</code></pre>
+</div>
+</div>
+<p>Please, do <strong>not</strong> put these data files into Git; they are big. Do <strong>not</strong> copy them into your directory. Do <strong>not</strong> decompress the gz data files. These create unnecessary big files on storage and are not big data friendly practices. Just read from the data folder <code>~/mimic</code> directly in following exercises.</p>
+<p>Use Bash commands to answer following questions.</p>
+<ol start="2" type="1">
+<li>Display the contents in the folders <code>core</code>, <code>hosp</code>, <code>icu</code>. Why are these data files distributed as <code>.csv.gz</code> files instead of <code>.csv</code> (comma separated values) files? Read the page <a href="https://mimic.mit.edu/docs/iv/" class="uri">https://mimic.mit.edu/docs/iv/</a> to understand what’s in each folder.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/mimic/core</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/mimic/hosp</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/mimic/icu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>admissions.csv.gz
+index.html
+patients.csv.gz
+transfers.csv.gz
+d_hcpcs.csv.gz
+d_icd_diagnoses.csv.gz
+d_icd_procedures.csv.gz
+d_labitems.csv.gz
+diagnoses_icd.csv.gz
+drgcodes.csv.gz
+emar.csv.gz
+emar_detail.csv.gz
+hcpcsevents.csv.gz
+index.html
+labevents.csv.gz
+labevents_filtered_itemid.csv.gz
+microbiologyevents.csv.gz
+pharmacy.csv.gz
+poe.csv.gz
+poe_detail.csv.gz
+prescriptions.csv.gz
+procedures_icd.csv.gz
+services.csv.gz
+chartevents.csv.gz
+chartevents_filtered_itemid.csv.gz
+d_items.csv.gz
+datetimeevents.csv.gz
+icustays.csv.gz
+index.html
+inputevents.csv.gz
+outputevents.csv.gz
+procedureevents.csv.gz</code></pre>
+</div>
+</div>
+<p><strong>Response:</strong> All the data in these folders are in <code>csv.gz</code> format, rather than <code>.csv</code>. The <code>csv.gz</code> is a <code>.csv</code> file compressed with the <code>gzip</code> utility for storage. Since MIMIC-VI encompasses a large amount of data, it’s preferable to store data in this compressed version.</p>
+<p>The <code>hosp</code> module had data obtained from the hospital-wide electronic health record. This information includes patient and admission information, laboratory results, and billed diagnoses. The <code>icu</code> module provides data for emergency department patients collected while they’re in the emergency department. This information includes why they were admitted, their triage assessment results, vital signs, and any medicine reconcilliation. The <code>core</code> module has been removed from the current version of MIMIC-IV so there isn’t much documentation on it on their website. The core module had information on admissions, patients, and transfers, which are now included in the <code>hosp</code> module.</p>
+<ol start="3" type="1">
+<li>Briefly describe what bash commands <code>zcat</code>, <code>zless</code>, <code>zmore</code>, and <code>zgrep</code> do.</li>
+</ol>
+<p>Zcat is a bash command for viewing the contents of a compressed file without decompressing it. Zless is a command that creates a soft-copy terminal to examine a compressed or plain text file one screenful at a time without decompressing. Zmore does the same thing to compressed files but has less functionalities, only browsing downwards. The zgrep command searches for particular expressions from a given file even if it’s compressed.</p>
+<ol start="4" type="1">
+<li>What’s the output of the following bash script?</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> datafile <span class="kw">in</span> ~/mimic/core/<span class="pp">*</span>.gz</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ls</span> <span class="at">-l</span> <span class="va">$datafile</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>-rw-rw-r--@ 1 carputhasamy  staff  17208966 Mar 15  2021 /Users/carputhasamy/mimic/core/admissions.csv.gz
+-rw-rw-r--@ 1 carputhasamy  staff  2955582 Mar 15  2021 /Users/carputhasamy/mimic/core/patients.csv.gz
+-rw-rw-r--@ 1 carputhasamy  staff  53014503 Mar 15  2021 /Users/carputhasamy/mimic/core/transfers.csv.gz</code></pre>
+</div>
+</div>
+<p>The output of <code>ls -l</code> is the detailed contents of the directory. In this case, the loop calls all the files ending in <code>.gz</code> within the <code>core</code> module within the <code>mimic</code> folder. Then <code>ls -l</code> outputs the permissions, owner, size and date and time last modified of each file ending in <code>.gz</code> within that folder.</p>
+<p>Display the number of lines in each data file using a similar loop.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> datafile <span class="kw">in</span> ~/mimic/core/<span class="pp">*</span>.gz</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">gzcat</span> <span class="va">$datafile</span> <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  523741
+  382279
+ 2189536</code></pre>
+</div>
+</div>
+<p>The <code>admissions</code> file has 523,741 lines, the <code>patients</code> file has 382,279 lines, and the <code>transfers</code> file has 2,189,536 lines.</p>
+<ol start="5" type="1">
+<li>Display the first few lines of <code>admissions.csv.gz</code>. How many rows are in this data file? How many unique patients (identified by <code>subject_id</code>) are in this data file? (Hint: combine Linux commands <code>zcat</code>, <code>head</code>/<code>tail</code>, <code>awk</code>, <code>sort</code>, <code>uniq</code>, <code>wc</code>, and so on.)</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gzcat</span> ~/mimic/core/admissions.csv.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-5</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">gzcat</span> ~/mimic/core/admissions.csv.gz <span class="kw">|</span> <span class="fu">awk</span> <span class="st">'END { print NR }'</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">gzcat</span> ~/mimic/core/admissions.csv.gz <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n+2</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-u</span> <span class="at">-t,</span> <span class="at">-k1,1</span> <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>subject_id,hadm_id,admittime,dischtime,deathtime,admission_type,admission_location,discharge_location,insurance,language,marital_status,ethnicity,edregtime,edouttime,hospital_expire_flag
+14679932,21038362,2139-09-26 14:16:00,2139-09-28 11:30:00,,ELECTIVE,,HOME,Other,ENGLISH,SINGLE,UNKNOWN,,,0
+15585972,24941086,2123-10-07 23:56:00,2123-10-12 11:22:00,,ELECTIVE,,HOME,Other,ENGLISH,,WHITE,,,0
+11989120,21965160,2147-01-14 09:00:00,2147-01-17 14:25:00,,ELECTIVE,,HOME,Other,ENGLISH,,UNKNOWN,,,0
+17817079,24709883,2165-12-27 17:33:00,2165-12-31 21:18:00,,ELECTIVE,,HOME,Other,ENGLISH,,OTHER,,,0
+523741
+  256878</code></pre>
+</div>
+</div>
+<p>There are 523,741 rows in this data file. It includes 256,878 unique patients identified by <code>subject_id</code> which is the first columm in the data file, seen in the first few lines.</p>
+<ol start="6" type="1">
+<li>What are the possible values taken by each of the variable <code>admission_type</code>, <code>admission_location</code>, <code>insurance</code>, and <code>ethnicity</code>? Also report the count for each unique value of these variables. (Hint: combine Linux commands <code>zcat</code>, <code>head</code>/<code>tail</code>, <code>awk</code>, <code>uniq -c</code>, <code>wc</code>, and so on.)</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gzcat</span> ~/mimic/core/admissions.csv.gz <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n+2</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F,</span> <span class="st">'{ print $6}'</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>7254 AMBULATORY OBSERVATION
+21581 DIRECT EMER.
+19991 DIRECT OBSERVATION
+72072 ELECTIVE
+100445 EU OBSERVATION
+157896 EW EMER.
+55497 OBSERVATION ADMIT
+41074 SURGICAL SAME DAY ADMISSION
+47930 URGENT</code></pre>
+</div>
+</div>
+<p>The possible values and counts of the variable <code>admission_type</code> are 7,254 entries of <code>Ambulatory Observation</code>, 21,581 entries of <code>Direct Emer.</code>, 19,991 entries of <code>Direct Observation</code>, 72,072 entries of <code>Elective</code>, 100,445 entries of <code>EU Observation</code>, 157,896 entries of <code>EW Emer.</code>, 55,497 entries of <code>Observational Admit</code>, 41,074 entries of <code>Surgical Save Day Admission</code>, and 47,930 of <code>Urgent</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gzcat</span> ~/mimic/core/admissions.csv.gz <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n+2</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F,</span> <span class="st">'{ print $7}'</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>60435 
+ 191 AMBULATORY SURGERY TRANSFER
+10670 CLINIC REFERRAL
+245744 EMERGENCY ROOM
+ 379 INFORMATION NOT AVAILABLE
+4467 INTERNAL TRANSFER TO OR FROM PSYCH
+6067 PACU
+127494 PHYSICIAN REFERRAL
+8449 PROCEDURE SITE
+39121 TRANSFER FROM HOSPITAL
+4063 TRANSFER FROM SKILLED NURSING FACILITY
+16660 WALK-IN/SELF REFERRAL</code></pre>
+</div>
+</div>
+<p>The values and counts of the variable <code>admission_location</code> are 60,435 empty entries, 191 entries of <code>Ambulatory Surgery Transfer</code>, 10,670 entries of <code>Clinical Referral</code>, 245,744 entries of <code>Emergency Room</code>, 379 entries of <code>Information Not Available</code>, 4,467 entries of <code>Internal Transfer to or from Psych</code>, 6,067 entries of <code>PACU</code>, 127,494 entries of <code>Physician Referral</code>, 8,449 entries of <code>Procedure Site</code>, 39,121 entries of <code>Transfer From Hospital</code>, 4,063 entries of <code>Transfer From Skilled Nursing Facility</code>, and 16,660 entries of <code>Walk-in/Self Referral</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gzcat</span> ~/mimic/core/admissions.csv.gz <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n+2</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F,</span> <span class="st">'{ print $9}'</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>50850 Medicaid
+171360 Medicare
+301530 Other</code></pre>
+</div>
+</div>
+<p>The values and counts of the variable <code>insurance</code> are 50,850 entries of <code>Medicaid</code>, 171,360 entries of <code>Medicare</code>, and 301,530 entries of <code>Other</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gzcat</span> ~/mimic/core/admissions.csv.gz <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n+2</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F,</span> <span class="st">'{ print $12}'</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1535 AMERICAN INDIAN/ALASKA NATIVE
+24506 ASIAN
+80293 BLACK/AFRICAN AMERICAN
+29823 HISPANIC/LATINO
+26813 OTHER
+3740 UNABLE TO OBTAIN
+19400 UNKNOWN
+337630 WHITE</code></pre>
+</div>
+</div>
+<p>The values and counts of the variable <code>ethnicity</code> are 1,535 entries as <code>American Indian/Alaska Native</code>, 24,506 entries as <code>Asian</code>, 80,293 entries as <code>Black/African American</code>, 29,823 entries as <code>Hispanic/Latino</code>, 26,813 entries as <code>Other</code>, 3,740 as <code>Unable to Obtain</code>, 19,400 as <code>Unknown</code>, and 337,630 as <code>White</code>.</p>
+</section>
+<section id="q4.-whos-popular-in-price-and-prejudice" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="q4.-whos-popular-in-price-and-prejudice"><span class="header-section-number">4</span> Q4. Who’s popular in Price and Prejudice</h2>
+<ol type="1">
+<li>You and your friend just have finished reading <em>Pride and Prejudice</em> by Jane Austen. Among the four main characters in the book, Elizabeth, Jane, Lydia, and Darcy, your friend thinks that Darcy was the most mentioned. You, however, are certain it was Elizabeth. Obtain the full text of the novel from <a href="http://www.gutenberg.org/cache/epub/42671/pg42671.txt" class="uri">http://www.gutenberg.org/cache/epub/42671/pg42671.txt</a> and save to your local folder.</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/opt/homebrew/bin/wget</span> http://www.gutenberg.org/cache/epub/42671/pg42671.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--2023-01-26 09:58:09--  http://www.gutenberg.org/cache/epub/42671/pg42671.txt
+Resolving www.gutenberg.org (www.gutenberg.org)... 2610:28:3090:3000:0:bad:cafe:47, 152.19.134.47
+Connecting to www.gutenberg.org (www.gutenberg.org)|2610:28:3090:3000:0:bad:cafe:47|:80... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://www.gutenberg.org/cache/epub/42671/pg42671.txt [following]
+--2023-01-26 09:58:09--  https://www.gutenberg.org/cache/epub/42671/pg42671.txt
+Connecting to www.gutenberg.org (www.gutenberg.org)|2610:28:3090:3000:0:bad:cafe:47|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 725060 (708K) [text/plain]
+Saving to: ‘pg42671.txt.2’
+
+     0K .......... .......... .......... .......... ..........  7%  226K 3s
+    50K .......... .......... .......... .......... .......... 14% 5.91M 1s
+   100K .......... .......... .......... .......... .......... 21%  601K 1s
+   150K .......... .......... .......... .......... .......... 28% 9.22M 1s
+   200K .......... .......... .......... .......... .......... 35%  589K 1s
+   250K .......... .......... .......... .......... .......... 42%  104M 1s
+   300K .......... .......... .......... .......... .......... 49% 21.8M 0s
+   350K .......... .......... .......... .......... .......... 56%  236M 0s
+   400K .......... .......... .......... .......... .......... 63% 27.1M 0s
+   450K .......... .......... .......... .......... .......... 70% 8.42M 0s
+   500K .......... .......... .......... .......... .......... 77%  639K 0s
+   550K .......... .......... .......... .......... .......... 84% 11.2M 0s
+   600K .......... .......... .......... .......... .......... 91%  103M 0s
+   650K .......... .......... .......... .......... .......... 98% 9.20M 0s
+   700K ........                                              100%  113M=0.5s
+
+2023-01-26 09:58:10 (1.38 MB/s) - ‘pg42671.txt.2’ saved [725060/725060]</code></pre>
+</div>
+</div>
+<p>Explain what <code>wget -nc</code> does. Wget is a networking command-line tool to download files from the internet. The wget command was not found in my computer so I found out I needed homebrew for Mac and then installed wget from there. It wasn’t working with “wget -nc” so I used “which wget” and found the link of the location which I used to replace “wget -nc” which fixed the problem.</p>
+<p>Do <strong>not</strong> put this text file <code>pg42671.txt</code> in Git. Complete the following loop to tabulate the number of times each of the four characters is mentioned using Linux commands.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pg42671.txt</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> char <span class="kw">in</span> Elizabeth Jane Lydia Darcy</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="va">$char</span>:</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grep</span> <span class="at">-o</span> <span class="at">-i</span> <span class="va">$char</span> pg42671.txt <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>bash: pg42671.txt: command not found
+Elizabeth:
+     634
+Jane:
+     294
+Lydia:
+     171
+Darcy:
+     418</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>What’s the difference between the following two commands?</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'hello, world'</span> <span class="op">&gt;</span> test1.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'hello, world'</span> <span class="op">&gt;&gt;</span> test2.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>‘&gt;’ is used to overwrite or create a file if it doesn’t exist and ‘&gt;&gt;’ is used to append to an existing file, or create it if it doesn’t already exist.</p>
+<ol start="3" type="1">
+<li>Using your favorite text editor (e.g., <code>vi</code>), type the following and save the file as <code>middle.sh</code>:</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Select lines from the middle of a file.</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Usage: bash middle.sh filename end_line num_lines</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-n</span> <span class="st">"</span><span class="va">$2</span><span class="st">"</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> <span class="st">"</span><span class="va">$3</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Using <code>chmod</code> to make the file executable by the owner, and run</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 751 middle.sh</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./middle.sh</span> pg42671.txt 20 5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Author: Jane Austen
+
+Editor: R. W. (Robert William) Chapman
+</code></pre>
+</div>
+</div>
+<p>Explain the output. Explain the meaning of <code>"$1"</code>, <code>"$2"</code>, and <code>"$3"</code> in this shell script. Why do we need the first line of the shell script? The output is the last five lines of the first 20 lines of the text file. “$1” is the file name, “$2” takes the first 20 lines, “$3” takes the last 5 lines of those 20 lines. We need the first line of the shell script to run in the proper shell.</p>
+</section>
+<section id="q5.-more-fun-with-linux" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="q5.-more-fun-with-linux"><span class="header-section-number">5</span> Q5. More fun with Linux</h2>
+<p>Try following commands in Bash and interpret the results: <code>cal</code>, <code>cal 2021</code>, <code>cal 9 1752</code> (anything unusual?), <code>date</code>, <code>hostname</code>, <code>arch</code>, <code>uname -a</code>, <code>uptime</code>, <code>who am i</code>, <code>who</code>, <code>w</code>, <code>id</code>, <code>last | head</code>, <code>echo {con,pre}{sent,fer}{s,ed}</code>, <code>time sleep 5</code>, <code>history | tail</code>.</p>
+<p>Cal opens a calendar of the current month.’cal 2021’ opens the entire 2021 calendar. ‘cal 9 1752’ opens a calendar of September 1752. The unusual thing is that it’s missing some dates (9/3-9/13). ‘date’ returns not only the current date but the exact time to the second, and the time zone. ‘hostname’ returned the name of the host user (.home). <code>arch</code> prints the computers architecture. The <code>uname</code> command writes to standard output the name of the operating system that you are using. <code>uptime</code> tells how long the Linux system has been running. <code>who am i</code> tells the username, date and time. <code>who</code> tells the users who are currently logged in. <code>w</code> returns a summary of every user logged into the computer, when they logged in, and if the user is idle. <code>id</code> is used to find out user and group names and numeric ID’s associated with users. <code>last</code> shows information on the last logged-in users, <code>last | head</code> shows the 10 most recent of those. <code>echo {con,pre}{sent,fer}{s,ed}</code> distributes each syllable across the other syllable sets to create a list of 8 words (2^3 words). <code>time sleep 5</code> pauses execution for 5 seconds. <code>history | tail</code> shows the tail (last 10 commands) of the history of commands performed.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
