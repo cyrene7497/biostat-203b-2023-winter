@@ -68,7 +68,7 @@ Computational Physiology. Follow the instructions at
 for using the MIMIC-IV data. Display the verification links to your completion 
 report and completion certificate here. (Hint: The CITI training takes a couple 
 hours and the PhysioNet credentialing takes a couple days; do not leave it to 
-the last minute.)
+  the last minute.)
 
 **CITI Completion Report:** https://www.citiprogram.org/verify/?k8d770661-be97-40a3-b679-e00c20736162-53803788
 
@@ -169,7 +169,7 @@ file, seen in the first few lines.
 each unique value of these variables. (Hint: combine Linux commands `zcat`, 
 `head`/`tail`, `awk`, `uniq -c`, `wc`, and so on.)
 ```{bash}
-gzcat ~/mimic/core/admissions.csv.gz | tail -n+2 | awk -F, '{ print $6}' | sort | uniq -c
+gzcat ~/mimic/core/admissions.csv.gz | tail -n +2 | awk -F, '{ print $6}' | sort | uniq -c
 ```
 **Admission Type:** The possible values and counts of the variable `admission_type`
 are 7,254 entries of `Ambulatory Observation`, 21,581 entries of `Direct Emer.`,
@@ -229,9 +229,13 @@ Linux commands.
 for char in Elizabeth Jane Lydia Darcy
 do
   echo $char:
-  grep -o -i $char pg42671.txt | wc -l
+  tail -n +60 pg42671.txt | grep -o -i $char | wc -l
 done
 ```
+**Response:** The actual beginning of the text is on line 60, so we first take 
+the tail of the text file (since the Author's name is Jane, we also have to 
+account for this in the count). So the number of times the characters Elizabeth,
+Jane, Lydia, and Darcy are 634, 292, 171, and 418 respecticaly.
 
 2. What's the difference between the following two commands?
 ```{bash}
