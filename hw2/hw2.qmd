@@ -59,12 +59,13 @@ getwd()
 setwd("~/mimic/core")
 
 system.time(read.csv("admissions.csv.gz"))
-system.time(read_csv("admissions.csv.gz"))
+system.time(read_csv("admissions.csv.gz", show_col_types = FALSE))
 system.time(fread("admissions.csv.gz"))
 ```
 It took 3.824 seconds to read the file with `read.csv`, 1.256 seconds to read
 with `read_csv`, and 0.6 seconds to read with `fread`. The fasted method seems 
 to be using `fread`. There is a difference in the default parsed data types. 
+
 For later questions, we stick to the `read_csv` in tidyverse.
 
 ## Q2. ICU stays
@@ -82,6 +83,10 @@ system(
 ```
 
 1. Import `icustatys.csv.gz` as a tibble `icustays_tble`. 
+```{r}
+setwd("~/mimic/icu")
+icustays_tble <- as_tibble(read_csv("icustays.csv.gz", show_col_types = FALSE))
+```
 
 2. How many unique `subject_id`? Can a `subject_id` have multiple ICU stays? 
 
