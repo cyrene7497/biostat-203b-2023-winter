@@ -110,6 +110,10 @@ icustays_tble %>%
 ```
 
 4. For each `subject_id`, let's only keep the first ICU stay in the tibble `icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think alternative ways to achieve the same function.)
+```{r}
+icustays_tble <- icustays_tble %>% group_by(subject_id) %>% filter(intime == min(intime))
+#head(arrange(icustays_tble, subject_id, intime))
+```
 
 ## Q3. `admission` data
 
