@@ -22,7 +22,7 @@ knitr:
 
 Display machine information for reproducibility:
 ```{r}
-#| eval: false
+#| eval: true
 sessionInfo()
 ```
 
@@ -54,7 +54,17 @@ system(str_c("ls -l ", mimic_path, "/icu"), intern = TRUE)
 There are quite a few utilities in R for reading plain text data files. Let us test the speed of reading a moderate sized compressed csv file, `admissions.csv.gz`, by three programs: `read.csv` in base R, `read_csv` in tidyverse, and `fread` in the popular data.table package. 
 
 Which function is fastest? Is there difference in the (default) parsed data types? (Hint: R function `system.time` measures run times.)
+```{r}
+getwd()
+setwd("~/mimic/core")
 
+system.time(read.csv("admissions.csv.gz"))
+system.time(read_csv("admissions.csv.gz"))
+system.time(fread("admissions.csv.gz"))
+```
+It took 3.824 seconds to read the file with `read.csv`, 1.256 seconds to read
+with `read_csv`, and 0.6 seconds to read with `fread`. The fasted method seems 
+to be using `fread`. There is a difference in the default parsed data types. 
 For later questions, we stick to the `read_csv` in tidyverse.
 
 ## Q2. ICU stays
