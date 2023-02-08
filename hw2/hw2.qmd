@@ -89,6 +89,18 @@ icustays_tble <- as_tibble(read_csv("icustays.csv.gz", show_col_types = FALSE))
 ```
 
 2. How many unique `subject_id`? Can a `subject_id` have multiple ICU stays? 
+```{r}
+length(unique(icustays_tble$subject_id))
+length(icustays_tble$subject_id)
+```
+There are 53,150 unique entries for `subject_id`. It appears that a `subject_id`
+can have multiple ICU stays since this number differs from the length of the 
+entire column. According to the documentation, the `icustays` table is derived
+from the `transfers` table, only including rows where the ward is an ICU. There 
+are multiple idetifiers used in this table. `subject_id` is unique to the 
+patient. `stay_id` is unique to the patient ward stay. This means a `subject_id`
+may have multiple ICU stays due to transfers between wards, or different hospital
+visits(`hadm_id`).
 
 3. Summarize the number of ICU stays per `subject_id` by graphs. 
 
