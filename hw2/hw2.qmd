@@ -103,6 +103,11 @@ may have multiple ICU stays due to transfers between wards, or different hospita
 visits(`hadm_id`).
 
 3. Summarize the number of ICU stays per `subject_id` by graphs. 
+```{r}
+icustays_tble %>% 
+  count(subject_id) %>% 
+  ggplot(aes(x=n)) + geom_histogram(binwidth = 1, color="darkblue", fill="lightblue")
+```
 
 4. For each `subject_id`, let's only keep the first ICU stay in the tibble `icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think alternative ways to achieve the same function.)
 
