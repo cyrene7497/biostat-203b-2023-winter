@@ -104,9 +104,11 @@ visits(`hadm_id`).
 
 3. Summarize the number of ICU stays per `subject_id` by graphs. 
 ```{r}
-icustays_tble %>% 
+stays_per_id <- icustays_tble %>% 
   count(subject_id) %>% 
-  ggplot(aes(x=n)) + geom_histogram(binwidth = 1, color="darkblue", fill="lightblue")
+  ggplot(aes(x=n)) + 
+  geom_histogram(binwidth = 1, color="darkblue", fill="lightblue") 
+stays_per_id
 ```
 
 4. For each `subject_id`, let's only keep the first ICU stay in the tibble `icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think alternative ways to achieve the same function.)
@@ -150,9 +152,43 @@ admissions_tble <- admissions_tble %>%
     - admission hour (anything unusual?)  
     - admission minute (anything unusual?)  
     - length of hospital stay (anything unusual?)    
+#### Admission Year
+```{r}
+admissions_tble$admit_year <- year(admissions_tble$admittime)
+ggplot(admissions_tble, aes(admit_year)) + 
+  geom_area(stat = "bin", fill = "lightblue", color = "darkblue") + 
+  ggtitle("Number of Admits by Year") + 
+  xlab("Year")
+```
+There is a wide range of years in the data set which are offset randomly per 
+`subject_id` to de-identify patients. A single date shift was assigned to each 
+`subject_id`. Thus the data for a single patient are consistent across modules, 
+but distinct patients are not temporally comparable. 
+
+#### Admission Month
+```{r}
+admissions_tble$admit_month <- month(admissions_tble$admittime) %>% 
+  factor(levels = c(01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12),
+         labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                    "Oct", "Nov", "Dec"))
+ggplot(admissions_tble, aes(admit_month)) +
+  geom_bar(binwidth = 1, fill = "lightblue", color = "darkblue")
+```
+There are slightly less admits in February than the other months, but they're
+all generally around the same number. 
+
+#### Admission Month Day
 ```{r}
 
 ```
+
+#### Admission Week Day
+
+#### Admission Hour
+
+#### Admission Minute
+
+#### Length of Hospital Stay
 
 ## Q4. `patients` data
 
