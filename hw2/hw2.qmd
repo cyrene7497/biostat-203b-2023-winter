@@ -283,17 +283,26 @@ system(
 system(
   str_c(
     "zcat < ", 
-    str_c(mimic_path, "/hosp/d_labitems.csv.gz"), 
+    str_c(mimic_path, "/hosp/labevents.csv.gz"), 
     "| awk 'END { print NR }'"
     ), 
   intern = TRUE
 )
 ```
-There are 1,631 rows in `labevents.csv.gz`.
+There are 122,103,668 rows in `labevents.csv.gz`.
 
 2. We are interested in the lab measurements of creatinine (50912), potassium (50971), sodium (50983), chloride (50902), bicarbonate (50882), hematocrit (51221), white blood cell count (51301), and glucose (50931). Retrieve a subset of `labevents.csv.gz` only containing these items for the patients in `icustays_tble` as a tibble `labevents_tble`. 
 
     Hint: `labevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer 5-10 minutes to ingest this file. If your computer really has trouble importing `labevents.csv.gz`, you can import from the reduced data file `labevents_filtered_itemid.csv.gz`.
+```{r}
+setwd("~/mimic/hosp")
+labevents_tble <- as_tibble(read_csv("labevents.csv.gz", col_select = 
+                                       c("labevent_id", "subject_id", "hadm_id",
+                                         "itemid", "charttime", "value", "valuenum",
+                                         "valueuom"))) %>%
+  filter(subject_id %in% icustays_tble$subject_id) %>%
+  filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931))
+```
 
 3. Further restrict `labevents_tble` to the first lab measurement during the ICU stay. 
 
