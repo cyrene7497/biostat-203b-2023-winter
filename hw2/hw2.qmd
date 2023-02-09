@@ -237,8 +237,21 @@ system(
 ```
 
 1. Import `patients.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/hosp/patients/>) as a tibble `patients_tble` and only keep the patients who have a match in `icustays_tble` (according to `subject_id`).
+```{r}
+setwd("~/mimic/core")
+patients_tble <- as_tibble(read_csv("patients.csv.gz", show_col_types = FALSE)) %>%
+  inner_join(icustays_tble, by = "subject_id")
+```
 
 2. Summarize variables `gender` and `anchor_age`, and explain any patterns you see.
+```{r}
+patients_tble %>% ggplot(aes(gender)) +
+  geom_bar(fill = "lightblue", color = "darkblue")
+patients_tble %>% ggplot(aes(anchor_age)) + 
+  geom_histogram(fill = "lightblue", color = "darkblue", binwidth = 5)
+```
+We can see that there are more females than males, and that `anchor_age` is very
+left skewed. 
 
 ## Q5. Lab results
 
