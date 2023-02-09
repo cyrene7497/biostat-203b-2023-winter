@@ -304,9 +304,37 @@ labevents_tble <- as_tibble(read_csv("labevents.csv.gz", col_select =
   filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931))
 ```
 
-3. Further restrict `labevents_tble` to the first lab measurement during the ICU stay. 
+3. Further restrict `labevents_tble` to the first lab measurement per measurement type, per patient, per stay during the ICU stay. 
+```{r}
+labevents_tble <- labevents_tble %>% group_by(subject_id,hadm_id,itemid) %>% 
+  filter(charttime == min(charttime))
+```
 
 4. Summarize the lab measurements by appropriate numerics and graphics. 
+```{r}
+labevents_tble %>% filter(itemid == 50912) %>% ggplot(aes(valuenum)) + geom_histogram(binwidth = 2) + xlim(0, 50) + ylim(0,10000)
+```
+```{r}
+labevents_tble %>% filter(itemid == 50971) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
+```{r}
+labevents_tble %>% filter(itemid == 50983) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
+```{r}
+labevents_tble %>% filter(itemid == 50902) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
+```{r}
+labevents_tble %>% filter(itemid == 50882) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
+```{r}
+labevents_tble %>% filter(itemid == 51221) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
+```{r}
+labevents_tble %>% filter(itemid == 51301) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
+```{r}
+labevents_tble %>% filter(itemid == 50931) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
 
 ## Q6. Vitals from charted events
 
