@@ -179,10 +179,17 @@ all generally around the same number.
 
 #### Admission Month Day
 ```{r}
-
+admissions_tble$admit_day <- day(admissions_tble$admittime)
+ggplot(admissions_tble, aes(admit_day)) + 
+  geom_freqpoly()
 ```
+Understandably, there are no dates at 0 or at 32. Most dates seem to occur 
+in the same general frequency as the others, besides 14. 
 
 #### Admission Week Day
+```{r}
+
+```
 
 #### Admission Hour
 
