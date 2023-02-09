@@ -373,18 +373,46 @@ system(
 
     Hint: `chartevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer >15 minutes to ingest this file. If your computer really has trouble importing `chartevents.csv.gz`, you can import from the reduced data file `chartevents_filtered_itemid.csv.gz`.
 ```{r}
+system(
+  str_c(
+    "zcat < ", 
+    str_c(mimic_path, "/icu/chartevents_filtered_itemid.csv.gz"), 
+    " | head"), 
+  intern = TRUE
+)
+```
+    
+```{r}
 setwd("~/mimic/icu")
-chartevents_tble <- as_tibble(read_csv("chartevents_filtered_itemid.csv.gz", col_select = 
-                                       c("subject_id", "hadm_id", "charttime",
-                                         "itemid", "value"))) %>%
+chartevents_tble <- as_tibble(read_csv("chartevents_filtered_itemid.csv.gz", 
+                                       show_col_types = FALSE)) %>%
   filter(subject_id %in% icustays_tble$subject_id) %>%
   filter(itemid %in% c(220045, 220181, 220179, 223761, 220210))
 ```
 
 2. Further restrict `chartevents_tble` to the first vital measurement during the ICU stay. 
+```{r}
+chartevents_tble <- chartevents_tble %>% group_by(subject_id,hadm_id,itemid) %>% 
+  filter(charttime == min(charttime))
+```
 
 3. Summarize these vital measurements by appropriate numerics and graphics. 
-
+```{r}
+chartevents_tble %>% filter(itemid == 220045) %>% ggplot(aes(valuenum)) + geom_histogram() + xlim(0,200)
+```
+```{r}
+chartevents_tble %>% filter(itemid == 220181) %>% ggplot(aes(valuenum)) + geom_histogram() + xlim(0,200)
+```
+```{r}
+chartevents_tble %>% filter(itemid == 220179) %>% ggplot(aes(valuenum)) + geom_histogram()+ xlim(0,300)
+```
+```{r}
+chartevents_tble %>% filter(itemid == 223761) %>% ggplot(aes(valuenum)) + geom_histogram(binwidth = 1) + xlim(20,150)
+chartevents_tble %>% filter(itemid == 223761) %>% ggplot(aes(x = itemid, y = valuenum)) + geom_boxplot()
+```
+```{r}
+chartevents_tble %>% filter(itemid == 220210) %>% ggplot(aes(valuenum)) + geom_histogram()
+```
 ## Q7. Putting things together
 
 Let us create a tibble `mimic_icu_cohort` for all ICU stays, where rows are the first ICU stay of each unique adult (age at admission > 18) and columns contain at least following variables  
