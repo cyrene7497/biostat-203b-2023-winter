@@ -172,7 +172,7 @@ admissions_tble$admit_month <- month(admissions_tble$admittime) %>%
          labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
                     "Oct", "Nov", "Dec"))
 ggplot(admissions_tble, aes(admit_month)) +
-  geom_bar(binwidth = 1, fill = "lightblue", color = "darkblue")
+  geom_bar(fill = "lightblue", color = "darkblue")
 ```
 There are slightly less admits in February than the other months, but they're
 all generally around the same number. 
@@ -196,12 +196,31 @@ The days of the week seem to occur in the same frequencies.
 
 #### Admission Hour
 ```{r}
-
+admissions_tble$admit_hour <- hour(admissions_tble$admittime)
+ggplot(admissions_tble, aes(admit_hour)) + 
+  geom_histogram(color = "darkblue", fill = "lightblue")
 ```
+Admission hours are distributed in such a way that random hours throughout the 
+day are missing. 
 
 #### Admission Minute
+```{r}
+admissions_tble$admit_min <- minute(admissions_tble$admittime)
+ggplot(admissions_tble, aes(admit_min)) + 
+  geom_histogram(color = "darkblue", fill = "lightblue")
+```
+Most of the minutes occur at the same frequency, besides an unusually high 
+number of admits on the hour, and what seems to be 15 the 15 minute intervals
+(15, 30, and 45).
 
 #### Length of Hospital Stay
+```{r}
+ggplot(icustays_tble, aes(los)) + 
+  geom_histogram(color = "darkblue", fill = "lightblue", binwidth = 1)
+```
+It's strange that there are patients who stayed in the ICU for over 3 months. 
+Majority of patients stay in the ICU for about 1 or 2 days. The bin width was set
+to 1 because `los`, the length of stay variable, is measured in fractional days.
 
 ## Q4. `patients` data
 
