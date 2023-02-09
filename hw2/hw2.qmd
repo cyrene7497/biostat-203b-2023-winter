@@ -114,7 +114,6 @@ stays_per_id
 4. For each `subject_id`, let's only keep the first ICU stay in the tibble `icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think alternative ways to achieve the same function.)
 ```{r}
 icustays_tble <- icustays_tble %>% group_by(subject_id) %>% filter(intime == min(intime))
-#head(arrange(icustays_tble, subject_id, intime))
 ```
 
 ## Q3. `admission` data
@@ -140,7 +139,8 @@ admissions_tble <- as_tibble(read_csv("admissions.csv.gz", show_col_types = FALS
 2. Let's only keep the admissions that have a match in `icustays_tble` according to `subject_id` and `hadm_id`.
 ```{r}
 admissions_tble <- admissions_tble %>%
-  inner_join(icustays_tble, by = c("subject_id", "hadm_id"))
+  filter(subject_id %in% icustays_tble$subject_id) %>%
+  filter(hadm_id %in% icustays_tble$hadm_id)
 ```
 
 3. Summarize the following variables by graphics. 
@@ -295,11 +295,21 @@ There are 122,103,668 rows in `labevents.csv.gz`.
 
     Hint: `labevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer 5-10 minutes to ingest this file. If your computer really has trouble importing `labevents.csv.gz`, you can import from the reduced data file `labevents_filtered_itemid.csv.gz`.
 ```{r}
+system(
+  str_c(
+    "zcat < ", 
+    str_c(mimic_path, "/hosp/labevents_filtered_itemid.csv.gz"), 
+    " | head"
+    ), 
+  intern = TRUE
+)
+```
+    
+```{r}
 setwd("~/mimic/hosp")
 labevents_tble <- as_tibble(read_csv("labevents.csv.gz", col_select = 
-                                       c("labevent_id", "subject_id", "hadm_id",
-                                         "itemid", "charttime", "value", "valuenum",
-                                         "valueuom"))) %>%
+                                       c("subject_id","hadm_id","itemid", "charttime",
+                                         "valuenum"), show_col_types = FALSE)) %>%
   filter(subject_id %in% icustays_tble$subject_id) %>%
   filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931))
 ```
@@ -362,6 +372,14 @@ system(
 1. We are interested in the vitals for ICU patients: heart rate (220045), mean non-invasive blood pressure (220181), systolic non-invasive blood pressure (220179), body temperature in Fahrenheit (223761), and respiratory rate (220210). Retrieve a subset of `chartevents.csv.gz` only containing these items for the patients in `icustays_tble` as a tibble `chartevents_tble`.
 
     Hint: `chartevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer >15 minutes to ingest this file. If your computer really has trouble importing `chartevents.csv.gz`, you can import from the reduced data file `chartevents_filtered_itemid.csv.gz`.
+```{r}
+setwd("~/mimic/icu")
+chartevents_tble <- as_tibble(read_csv("chartevents_filtered_itemid.csv.gz", col_select = 
+                                       c("subject_id", "hadm_id", "charttime",
+                                         "itemid", "value"))) %>%
+  filter(subject_id %in% icustays_tble$subject_id) %>%
+  filter(itemid %in% c(220045, 220181, 220179, 223761, 220210))
+```
 
 2. Further restrict `chartevents_tble` to the first vital measurement during the ICU stay. 
 
