@@ -188,10 +188,16 @@ in the same general frequency as the others, besides 14.
 
 #### Admission Week Day
 ```{r}
-
+admissions_tble$admit_wd <- wday(admissions_tble$admittime, label = TRUE)
+ggplot(admissions_tble, aes(admit_wd)) + 
+  geom_bar(fill = "lightblue", color = "darkblue")
 ```
+The days of the week seem to occur in the same frequencies. 
 
 #### Admission Hour
+```{r}
+
+```
 
 #### Admission Minute
 
