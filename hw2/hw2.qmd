@@ -279,6 +279,17 @@ system(
 ```
 
 1. Find how many rows are in `labevents.csv.gz`.
+```{r}
+system(
+  str_c(
+    "zcat < ", 
+    str_c(mimic_path, "/hosp/d_labitems.csv.gz"), 
+    "| awk 'END { print NR }'"
+    ), 
+  intern = TRUE
+)
+```
+There are 1,631 rows in `labevents.csv.gz`.
 
 2. We are interested in the lab measurements of creatinine (50912), potassium (50971), sodium (50983), chloride (50902), bicarbonate (50882), hematocrit (51221), white blood cell count (51301), and glucose (50931). Retrieve a subset of `labevents.csv.gz` only containing these items for the patients in `icustays_tble` as a tibble `labevents_tble`. 
 
