@@ -139,8 +139,7 @@ admissions_tble <- as_tibble(read_csv("admissions.csv.gz", show_col_types = FALS
 2. Let's only keep the admissions that have a match in `icustays_tble` according to `subject_id` and `hadm_id`.
 ```{r}
 admissions_tble <- admissions_tble %>%
-  filter(subject_id %in% icustays_tble$subject_id) %>%
-  filter(hadm_id %in% icustays_tble$hadm_id)
+  semi_join(icustays_tble, by = c("subject_id", "hadm_id"))
 ```
 
 3. Summarize the following variables by graphics. 
@@ -295,14 +294,10 @@ There are 122,103,668 rows in `labevents.csv.gz`.
 
     Hint: `labevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer 5-10 minutes to ingest this file. If your computer really has trouble importing `labevents.csv.gz`, you can import from the reduced data file `labevents_filtered_itemid.csv.gz`.
 ```{r}
-system(
-  str_c(
-    "zcat < ", 
-    str_c(mimic_path, "/hosp/labevents_filtered_itemid.csv.gz"), 
-    " | head"
-    ), 
-  intern = TRUE
-)
+setwd("~/mimic/hosp")
+d_labitems_tble <- read_csv("d_labitems.csv.gz") %>% 
+  filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931)) %>%
+  print(width = Inf)
 ```
     
 ```{r}
@@ -310,15 +305,24 @@ setwd("~/mimic/hosp")
 labevents_tble <- as_tibble(read_csv("labevents.csv.gz", col_select = 
                                        c("subject_id","hadm_id","itemid", "charttime",
                                          "valuenum"), show_col_types = FALSE)) %>%
-  filter(subject_id %in% icustays_tble$subject_id) %>%
+  semi_join(icustays_tble, by = "subject_id") %>%
   filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931))
 ```
 
 3. Further restrict `labevents_tble` to the first lab measurement per measurement type, per patient, per stay during the ICU stay. 
 ```{r}
-labevents_tble <- labevents_tble %>% group_by(subject_id,hadm_id,itemid) %>% 
+labevents_tble <- labevents_tble %>% 
+  left_join(select(icustays_tble, subject_id, intime, outtime), by = "subject_id") %>%
+  filter(charttime >= intime & charttime <= outtime) %>% 
+  group_by(subject_id, itemid) %>% 
   filter(charttime == min(charttime))
 ```
+```{r}
+labevents_tble <- labevents_tble %>%
+  select(-intime, -outtime) %>%
+  print(width = Inf)
+```
+
 
 4. Summarize the lab measurements by appropriate numerics and graphics. 
 ```{r}
