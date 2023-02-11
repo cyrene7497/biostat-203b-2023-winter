@@ -318,38 +318,28 @@ labevents_tble <- labevents_tble %>%
   filter(charttime == min(charttime))
 ```
 ```{r}
-labevents_tble <- labevents_tble %>%
-  select(-intime, -outtime) %>%
-  print(width = Inf)
+labevents_tble <- labevents_tble %>% 
+  select(-intime, -outtime, -charttime, -hadm_id) %>% 
+  ungroup(subject_id, itemid) %>%
+  distinct() %>%
+  pivot_wider(names_from = itemid, values_from = valuenum) %>% 
+  unnest() %>%
+  rename_at(
+    vars(as.character(d_labitems_tble$itemid)), 
+    ~str_to_lower(d_labitems_tble$label))
 ```
-
-
 4. Summarize the lab measurements by appropriate numerics and graphics. 
 ```{r}
-labevents_tble %>% filter(itemid == 50912) %>% ggplot(aes(valuenum)) + geom_histogram(binwidth = 2) + xlim(0, 50) + ylim(0,10000)
+head(labevents_tble)
+ggplot(labevents_tble, aes(hematocrit)) + geom_boxplot()
+ggplot(labevents_tble, aes(`white blood cells`)) + geom_boxplot()
+ggplot(labevents_tble, aes(chloride)) + geom_boxplot()
+ggplot(labevents_tble, aes(creatinine)) + geom_boxplot()
+ggplot(labevents_tble, aes(potassium)) + geom_boxplot()
+ggplot(labevents_tble, aes(bicarbonate)) + geom_boxplot()
+ggplot(labevents_tble, aes(sodium)) + geom_boxplot()
+ggplot(labevents_tble, aes(glucose)) + geom_boxplot()
 ```
-```{r}
-labevents_tble %>% filter(itemid == 50971) %>% ggplot(aes(valuenum)) + geom_histogram()
-```
-```{r}
-labevents_tble %>% filter(itemid == 50983) %>% ggplot(aes(valuenum)) + geom_histogram()
-```
-```{r}
-labevents_tble %>% filter(itemid == 50902) %>% ggplot(aes(valuenum)) + geom_histogram()
-```
-```{r}
-labevents_tble %>% filter(itemid == 50882) %>% ggplot(aes(valuenum)) + geom_histogram()
-```
-```{r}
-labevents_tble %>% filter(itemid == 51221) %>% ggplot(aes(valuenum)) + geom_histogram()
-```
-```{r}
-labevents_tble %>% filter(itemid == 51301) %>% ggplot(aes(valuenum)) + geom_histogram()
-```
-```{r}
-labevents_tble %>% filter(itemid == 50931) %>% ggplot(aes(valuenum)) + geom_histogram()
-```
-
 ## Q6. Vitals from charted events
 
 `chartevents.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/icu/chartevents/>) contains all the charted data available for a patient. During their ICU stay, the primary repository of a patient’s information is their electronic chart. The `itemid` variable indicates a single measurement type in the database. The `value` variable is the value measured for `itemid`. The first 10 lines of `chartevents.csv.gz` are
@@ -371,6 +361,12 @@ system(
     " | head"), 
   intern = TRUE
 )
+```
+```{r}
+setwd("~/mimic/icu")
+d_items_tble <- read_csv("d_items.csv.gz") %>% 
+  filter(itemid %in% c(220045, 220181, 220179, 223761, 220210)) %>%
+  print(width = Inf)
 ```
 
 1. We are interested in the vitals for ICU patients: heart rate (220045), mean non-invasive blood pressure (220181), systolic non-invasive blood pressure (220179), body temperature in Fahrenheit (223761), and respiratory rate (220210). Retrieve a subset of `chartevents.csv.gz` only containing these items for the patients in `icustays_tble` as a tibble `chartevents_tble`.
@@ -396,8 +392,12 @@ chartevents_tble <- as_tibble(read_csv("chartevents_filtered_itemid.csv.gz",
 
 2. Further restrict `chartevents_tble` to the first vital measurement during the ICU stay. 
 ```{r}
-chartevents_tble <- chartevents_tble %>% group_by(subject_id,hadm_id,itemid) %>% 
-  filter(charttime == min(charttime))
+chartevents_tble <- chartevents_tble %>% 
+  left_join(select(icustays_tble, subject_id, intime, outtime), by = "subject_id") %>%
+  filter(charttime >= intime & charttime <= outtime) %>% 
+  group_by(subject_id, itemid) %>% 
+  filter(charttime == min(charttime)) %>%
+  select(-intime, -outtime)
 ```
 
 3. Summarize these vital measurements by appropriate numerics and graphics. 
@@ -427,6 +427,13 @@ Let us create a tibble `mimic_icu_cohort` for all ICU stays, where rows are the 
 - first lab measurements during ICU stay  
 - first vital measurements during ICU stay
 - an indicator variable `thirty_day_mort` whether the patient died within 30 days of hospital admission (30 day mortality)
+```{r}
+head(icustays_tble)
+head(admissions_tble)
+head(patients_tble)
+head(labevents_tble)
+```
+
 
 ## Q8. Exploratory data analysis (EDA)
 
