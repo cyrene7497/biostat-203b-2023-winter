@@ -239,7 +239,7 @@ system(
 ```{r}
 setwd("~/mimic/core")
 patients_tble <- as_tibble(read_csv("patients.csv.gz", show_col_types = FALSE)) %>%
-  inner_join(icustays_tble, by = "subject_id")
+  semi_join(icustays_tble, by = "subject_id")
 ```
 
 2. Summarize variables `gender` and `anchor_age`, and explain any patterns you see.
@@ -440,7 +440,7 @@ head(chartevents_tble)
 ```
 ```{r}
 mimic_icu_cohort <- icustays_tble %>% left_join(admissions_tble, by = c("subject_id", "hadm_id")) %>%
-  left_join(patients_tble, by = c("subject_id", "hadm_id", "stay_id")) %>%
+  left_join(patients_tble, by = c("subject_id")) %>%
   mutate(adm_age = year(admittime) - anchor_year + anchor_age) %>%
   filter(adm_age > 18) %>%
   left_join(labevents_tble, by = "subject_id") %>%
@@ -492,8 +492,27 @@ mimic_icu_cohort %>%
 
 
 - `thirty_day_mort` vs first lab measurements
+```{r}
+mimic_icu_cohort %>%
+  group_by(thirty_day_mort) %>% drop_na() %>%
+  summarise(mean_hema = mean(hematocrit), mean_wbc = mean(`white blood cells`),
+            mean_chol = mean(chloride), mean_creat = mean(creatinine), 
+            mean_po = mean(potassium), mean_bicarb = mean(bicarbonate), 
+            mean_sodium = mean(sodium), mean_glucose = mean(glucose), n = n())
+```
 
 - `thirty_day_mort` vs first vital measurements
-
+```{r}
+mimic_icu_cohort %>%
+  group_by(thirty_day_mort) %>% drop_na() %>%
+  summarise(mean_hr = mean(`heart rate`), mean_ni_bp_sys = mean(`non invasive blood pressure systolic`),
+            mean_ni_bp_mean = mean(`non invasive blood pressure mean`), mean_rr = mean(`respiratory rate`), 
+            mean_df = mean(`temperature fahrenheit`), n = n())
+```
 - `thirty_day_mort` vs first ICU unit
+```{r}
+mimic_icu_cohort %>% 
+  filter(thirty_day_mort == 1) %>%
+  ggplot(aes(first_careunit)) + geom_bar() + coord_flip()
+```
 
