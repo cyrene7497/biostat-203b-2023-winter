@@ -448,7 +448,6 @@ mimic_icu_cohort <- icustays_tble %>% left_join(admissions_tble, by = c("subject
   mutate(thirty_day_mort = case_when(as.duration(interval(admittime, dod)) <= days(30) ~ 1,
                                      as.duration(interval(admittime, dod)) > days(30)  ~ 0,
                                      is.na(as.duration(interval(admittime, dod))) ~ 0)) %>%
-  select(admittime, dod, thirty_day_mort) %>%
   print(width = Inf)
 ```
 
@@ -458,6 +457,39 @@ mimic_icu_cohort <- icustays_tble %>% left_join(admissions_tble, by = c("subject
 Summarize following information using appropriate numerics or graphs.
 
 - `thirty_day_mort` vs demographic variables (ethnicity, language, insurance, marital_status, gender, age at hospital admission)
+```{r}
+ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = ethnicity)) + 
+  geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
+  facet_grid(~ethnicity)
+```
+```{r}
+ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = language)) + 
+  geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
+  facet_grid(~language)
+```
+```{r}
+ggplot(mimic_icu_cohort, aes(fill=insurance, x=thirty_day_mort, y=thirty_day_mort)) + 
+    geom_bar(position="stack", stat="identity")
+```
+```{r}
+ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = marital_status)) + 
+  geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
+  facet_grid(~marital_status)
+```
+```{r}
+ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = gender)) + 
+  geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
+  facet_grid(~gender)
+```
+```{r}
+mimic_icu_cohort %>% 
+  filter(thirty_day_mort == 1) %>%
+  ggplot(aes(adm_age)) + geom_boxplot()
+mimic_icu_cohort %>% 
+  filter(thirty_day_mort == 0) %>%
+  ggplot(aes(adm_age)) + geom_boxplot()
+```
+
 
 - `thirty_day_mort` vs first lab measurements
 
