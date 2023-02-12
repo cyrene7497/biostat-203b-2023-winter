@@ -397,25 +397,29 @@ chartevents_tble <- chartevents_tble %>%
   filter(charttime >= intime & charttime <= outtime) %>% 
   group_by(subject_id, itemid) %>% 
   filter(charttime == min(charttime)) %>%
-  select(-intime, -outtime)
+  print(width = Inf)
+```
+```{r}
+chartevents_tble <- chartevents_tble %>% 
+  select(-hadm_id, -stay_id, -charttime, -intime, -outtime) %>% 
+  ungroup(subject_id, itemid) %>%
+  distinct() %>%
+  pivot_wider(names_from = itemid, values_from = valuenum) %>% 
+  unnest() %>%
+  rename_at(
+    vars(as.character(d_items_tble$itemid)), 
+    ~str_to_lower(d_items_tble$label)) %>%
+  print(width = Inf)
 ```
 
 3. Summarize these vital measurements by appropriate numerics and graphics. 
 ```{r}
-chartevents_tble %>% filter(itemid == 220045) %>% ggplot(aes(valuenum)) + geom_histogram() + xlim(0,200)
-```
-```{r}
-chartevents_tble %>% filter(itemid == 220181) %>% ggplot(aes(valuenum)) + geom_histogram() + xlim(0,200)
-```
-```{r}
-chartevents_tble %>% filter(itemid == 220179) %>% ggplot(aes(valuenum)) + geom_histogram()+ xlim(0,300)
-```
-```{r}
-chartevents_tble %>% filter(itemid == 223761) %>% ggplot(aes(valuenum)) + geom_histogram(binwidth = 1) + xlim(20,150)
-chartevents_tble %>% filter(itemid == 223761) %>% ggplot(aes(x = itemid, y = valuenum)) + geom_boxplot()
-```
-```{r}
-chartevents_tble %>% filter(itemid == 220210) %>% ggplot(aes(valuenum)) + geom_histogram()
+head(chartevents_tble)
+ggplot(chartevents_tble, aes(`heart rate`)) + geom_boxplot()
+ggplot(chartevents_tble, aes(`non invasive blood pressure systolic`)) + geom_boxplot()
+ggplot(chartevents_tble, aes(`non invasive blood pressure mean`)) + geom_boxplot()
+ggplot(chartevents_tble, aes(`respiratory rate`)) + geom_boxplot()
+ggplot(chartevents_tble, aes(`temperature fahrenheit`)) + geom_boxplot()
 ```
 ## Q7. Putting things together
 
@@ -432,6 +436,20 @@ head(icustays_tble)
 head(admissions_tble)
 head(patients_tble)
 head(labevents_tble)
+head(chartevents_tble)
+```
+```{r}
+mimic_icu_cohort <- icustays_tble %>% left_join(admissions_tble, by = c("subject_id", "hadm_id")) %>%
+  left_join(patients_tble, by = c("subject_id", "hadm_id", "stay_id")) %>%
+  mutate(adm_age = year(admittime) - anchor_year + anchor_age) %>%
+  filter(adm_age > 18) %>%
+  left_join(labevents_tble, by = "subject_id") %>%
+  left_join(chartevents_tble, by = "subject_id") %>%
+  mutate(thirty_day_mort = case_when(as.duration(interval(admittime, dod)) <= days(30) ~ 1,
+                                     as.duration(interval(admittime, dod)) > days(30)  ~ 0,
+                                     is.na(as.duration(interval(admittime, dod))) ~ 0)) %>%
+  select(admittime, dod, thirty_day_mort) %>%
+  print(width = Inf)
 ```
 
 
