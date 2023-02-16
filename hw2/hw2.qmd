@@ -81,7 +81,8 @@ For later questions, we stick to the `read_csv` in tidyverse.
 
 ## Q2. ICU stays
 
-`icustays.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/icu/icustays/>) contains data about Intensive Care Units (ICU) stays. The first 10 lines are
+`icustays.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/icu/icustays/>) 
+contains data about Intensive Care Units (ICU) stays. The first 10 lines are
 ```{r}
 system(
   str_c(
@@ -108,7 +109,7 @@ There are 53,150 unique entries for `subject_id`. It appears that a `subject_id`
 can have multiple ICU stays since this number differs from the length of the 
 entire column. According to the documentation, the `icustays` table is derived
 from the `transfers` table, only including rows where the ward is an ICU. There 
-are multiple idetifiers used in this table. `subject_id` is unique to the 
+are multiple identifiers used in this table. `subject_id` is unique to the 
 patient. `stay_id` is unique to the patient ward stay. This means a `subject_id`
 may have multiple ICU stays due to transfers between wards, or different hospital
 visits(`hadm_id`).
@@ -118,11 +119,14 @@ visits(`hadm_id`).
 stays_per_id <- icustays_tble %>% 
   count(subject_id) %>% 
   ggplot(aes(x=n)) + 
-  geom_histogram(binwidth = 1, color="darkblue", fill="lightblue") 
+  geom_histogram(binwidth = 1, color="darkblue", fill="lightblue") +
+  ggtitle("Number of ICU Stays per `Subject_ID`")
 stays_per_id
 ```
 
-4. For each `subject_id`, let's only keep the first ICU stay in the tibble `icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think alternative ways to achieve the same function.)
+4. For each `subject_id`, let's only keep the first ICU stay in the tibble 
+`icustays_tble`. (Hint: `slice_min` and `slice_max` may take long. Think 
+alternative ways to achieve the same function.)
 ```{r}
 icustays_tble <- icustays_tble %>% group_by(subject_id) %>% filter(intime == min(intime))
 ```
