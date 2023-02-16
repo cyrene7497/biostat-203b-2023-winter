@@ -254,7 +254,9 @@ to 1 because `los`, the length of stay variable, is measured in fractional days.
 
 ## Q4. `patients` data
 
-Patient information is available in `patients.csv.gz`. See <https://mimic.mit.edu/docs/iv/modules/hosp/patients/> for details of each field in this file. The first 10 lines are
+Patient information is available in `patients.csv.gz`. See 
+<https://mimic.mit.edu/docs/iv/modules/hosp/patients/> for details of each field
+in this file. The first 10 lines are
 ```{r}
 system(
   str_c(
@@ -266,7 +268,9 @@ system(
 )
 ```
 
-1. Import `patients.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/hosp/patients/>) as a tibble `patients_tble` and only keep the patients who have a match in `icustays_tble` (according to `subject_id`).
+1. Import `patients.csv.gz` (<https://mimic.mit.edu/docs/iv/modules/hosp/patients/>)
+as a tibble `patients_tble` and only keep the patients who have a match in 
+`icustays_tble` (according to `subject_id`).
 ```{r}
 setwd("~/mimic/core")
 patients_tble <- as_tibble(read_csv("patients.csv.gz", show_col_types = FALSE)) %>%
@@ -276,12 +280,16 @@ patients_tble <- as_tibble(read_csv("patients.csv.gz", show_col_types = FALSE)) 
 2. Summarize variables `gender` and `anchor_age`, and explain any patterns you see.
 ```{r}
 patients_tble %>% ggplot(aes(gender)) +
-  geom_bar(fill = "lightblue", color = "darkblue")
+  geom_bar(fill = "lightblue", color = "darkblue") + 
+  ggtitle("Number of Patients by Gender")
 patients_tble %>% ggplot(aes(anchor_age)) + 
-  geom_histogram(fill = "lightblue", color = "darkblue", binwidth = 5)
+  geom_histogram(fill = "lightblue", color = "darkblue", binwidth = 5) + 
+  ggtitle("Number of Patients by Anchor Age") +
+  xlab("Anchor Age")
 ```
 We can see that there are more females than males, and that `anchor_age` is very
-left skewed. 
+left skewed, meaning there are more patients of elderly age (above 50), than 
+below. 
 
 ## Q5. Lab results
 
