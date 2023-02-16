@@ -151,7 +151,8 @@ setwd("~/mimic/core")
 admissions_tble <- as_tibble(read_csv("admissions.csv.gz", show_col_types = FALSE))
 ```
 
-2. Let's only keep the admissions that have a match in `icustays_tble` according to `subject_id` and `hadm_id`.
+2. Let's only keep the admissions that have a match in `icustays_tble` according
+to `subject_id` and `hadm_id`.
 ```{r}
 admissions_tble <- admissions_tble %>%
   semi_join(icustays_tble, by = c("subject_id", "hadm_id"))
@@ -186,7 +187,9 @@ admissions_tble$admit_month <- month(admissions_tble$admittime) %>%
          labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
                     "Oct", "Nov", "Dec"))
 ggplot(admissions_tble, aes(admit_month)) +
-  geom_bar(fill = "lightblue", color = "darkblue")
+  geom_bar(fill = "lightblue", color = "darkblue") + 
+  ggtitle("Number of Admits by Month") +
+  xlab("Month")
 ```
 There are slightly less admits in February than the other months, but they're
 all generally around the same number. 
@@ -195,16 +198,21 @@ all generally around the same number.
 ```{r}
 admissions_tble$admit_day <- day(admissions_tble$admittime)
 ggplot(admissions_tble, aes(admit_day)) + 
-  geom_freqpoly()
+  geom_freqpoly(color = "darkblue") + 
+  ggtitle("Number of Admits by Day of the Month") +
+  xlab("Admission Day")
 ```
 Understandably, there are no dates at 0 or at 32. Most dates seem to occur 
-in the same general frequency as the others, besides 14. 
+in the same general frequency as the others, besides 14 which is generally the 
+middle of the month and much higher than the other days. 
 
 #### Admission Week Day
 ```{r}
 admissions_tble$admit_wd <- wday(admissions_tble$admittime, label = TRUE)
 ggplot(admissions_tble, aes(admit_wd)) + 
-  geom_bar(fill = "lightblue", color = "darkblue")
+  geom_bar(fill = "lightblue", color = "darkblue") + 
+  ggtitle("Number of Admits by Day of the Week") +
+  xlab("Admission Weekday")
 ```
 The days of the week seem to occur in the same frequencies. 
 
@@ -212,25 +220,33 @@ The days of the week seem to occur in the same frequencies.
 ```{r}
 admissions_tble$admit_hour <- hour(admissions_tble$admittime)
 ggplot(admissions_tble, aes(admit_hour)) + 
-  geom_histogram(color = "darkblue", fill = "lightblue")
+  geom_histogram(color = "darkblue", fill = "lightblue") + 
+  ggtitle("Number of Admits by the Hour") +
+  xlab("Admission Hour")
 ```
 Admission hours are distributed in such a way that random hours throughout the 
-day are missing. 
+day are missing, maybe those are hours that staff is mostly on a break. There's
+also a large surge right at midnight, probably emergencies. 
 
 #### Admission Minute
 ```{r}
 admissions_tble$admit_min <- minute(admissions_tble$admittime)
 ggplot(admissions_tble, aes(admit_min)) + 
-  geom_histogram(color = "darkblue", fill = "lightblue")
+  geom_histogram(color = "darkblue", fill = "lightblue") + 
+  ggtitle("Number of Admits by the Minute") +
+  xlab("Admission Minute")
 ```
 Most of the minutes occur at the same frequency, besides an unusually high 
 number of admits on the hour, and what seems to be 15 the 15 minute intervals
-(15, 30, and 45).
+(15, 30, and 45). This is probably due to human rounding as staff records the
+patient's admission time.
 
 #### Length of Hospital Stay
 ```{r}
 ggplot(icustays_tble, aes(los)) + 
-  geom_histogram(color = "darkblue", fill = "lightblue", binwidth = 1)
+  geom_histogram(color = "darkblue", fill = "lightblue", binwidth = 1) + 
+  ggtitle("Number of Admits by Length of Stay") +
+  xlab("Length of Stay (in days)")
 ```
 It's strange that there are patients who stayed in the ICU for over 3 months. 
 Majority of patients stay in the ICU for about 1 or 2 days. The bin width was set
