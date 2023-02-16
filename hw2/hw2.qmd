@@ -530,6 +530,7 @@ mimic_icu_cohort <- icustays_tble %>% left_join(admissions_tble, by = c("subject
                                      as.duration(interval(admittime, dod)) > days(30)  ~ 0,
                                      is.na(as.duration(interval(admittime, dod))) ~ 0)) %>%
   print(width = Inf)
+table(mimic_icu_cohort$thirty_day_mort)
 ```
 
 
