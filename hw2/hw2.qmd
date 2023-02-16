@@ -329,9 +329,18 @@ system(
 ```
 There are 122,103,668 rows in `labevents.csv.gz`.
 
-2. We are interested in the lab measurements of creatinine (50912), potassium (50971), sodium (50983), chloride (50902), bicarbonate (50882), hematocrit (51221), white blood cell count (51301), and glucose (50931). Retrieve a subset of `labevents.csv.gz` only containing these items for the patients in `icustays_tble` as a tibble `labevents_tble`. 
+2. We are interested in the lab measurements of creatinine (50912), potassium 
+(50971), sodium (50983), chloride (50902), bicarbonate (50882), hematocrit 
+(51221), white blood cell count (51301), and glucose (50931). Retrieve a subset 
+of `labevents.csv.gz` only containing these items for the patients in 
+`icustays_tble` as a tibble `labevents_tble`. 
 
-    Hint: `labevents.csv.gz` is a data file too big to be read in by the `read_csv` function in its default setting. Utilize the `col_select` option in the `read_csv` function to reduce the memory burden. It took my computer 5-10 minutes to ingest this file. If your computer really has trouble importing `labevents.csv.gz`, you can import from the reduced data file `labevents_filtered_itemid.csv.gz`.
+    Hint: `labevents.csv.gz` is a data file too big to be read in by the 
+    `read_csv` function in its default setting. Utilize the `col_select` option 
+    in the `read_csv` function to reduce the memory burden. It took my computer 
+    5-10 minutes to ingest this file. If your computer really has trouble 
+    importing `labevents.csv.gz`, you can import from the reduced data file 
+    `labevents_filtered_itemid.csv.gz`.
 ```{r}
 setwd("~/mimic/hosp")
 d_labitems_tble <- read_csv("d_labitems.csv.gz") %>% 
@@ -345,7 +354,8 @@ labevents_tble <- as_tibble(read_csv("labevents.csv.gz", col_select =
                                        c("subject_id","hadm_id","itemid", "charttime",
                                          "valuenum"), show_col_types = FALSE)) %>%
   semi_join(icustays_tble, by = "subject_id") %>%
-  filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931))
+  filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931)) %>%
+  print(width = Inf)
 ```
 
 3. Further restrict `labevents_tble` to the first lab measurement per measurement type, per patient, per stay during the ICU stay. 
@@ -354,7 +364,8 @@ labevents_tble <- labevents_tble %>%
   left_join(select(icustays_tble, subject_id, intime, outtime), by = "subject_id") %>%
   filter(charttime >= intime & charttime <= outtime) %>% 
   group_by(subject_id, itemid) %>% 
-  filter(charttime == min(charttime))
+  filter(charttime == min(charttime)) %>%
+  print(width = Inf)
 ```
 ```{r}
 labevents_tble <- labevents_tble %>% 
@@ -365,7 +376,8 @@ labevents_tble <- labevents_tble %>%
   unnest() %>%
   rename_at(
     vars(as.character(d_labitems_tble$itemid)), 
-    ~str_to_lower(d_labitems_tble$label))
+    ~str_to_lower(d_labitems_tble$label)) %>%
+  print(width = Inf)
 ```
 4. Summarize the lab measurements by appropriate numerics and graphics. 
 ```{r}
