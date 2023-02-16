@@ -542,34 +542,38 @@ Summarize following information using appropriate numerics or graphs.
 ```{r}
 ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = ethnicity)) + 
   geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
-  facet_grid(~ethnicity)
+  facet_wrap(~ethnicity) + ggtitle("Thirty Day Mortality by Ethnicity")
 ```
 ```{r}
 ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = language)) + 
   geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
-  facet_grid(~language)
+  facet_grid(~language) + ggtitle("Thirty Day Mortality by Language")
 ```
 ```{r}
 ggplot(mimic_icu_cohort, aes(fill=insurance, x=thirty_day_mort, y=thirty_day_mort)) + 
-    geom_bar(position="stack", stat="identity")
+    geom_bar(position="stack", stat="identity") + 
+  ggtitle("Thirty Day Mortality by Insurance")
 ```
 ```{r}
 ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = marital_status)) + 
   geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
-  facet_grid(~marital_status)
+  facet_wrap(~marital_status) +
+  ggtitle("Thirty Day Mortality by Marital Status")
 ```
 ```{r}
 ggplot(mimic_icu_cohort, aes(thirty_day_mort, group = gender)) + 
   geom_bar(aes(y = ..prop.., fill = factor(..x..)), stat = "count") +
-  facet_grid(~gender)
+  facet_grid(~gender) + ggtitle("Thirty Day Mortality by Gender")
 ```
 ```{r}
 mimic_icu_cohort %>% 
   filter(thirty_day_mort == 1) %>%
-  ggplot(aes(adm_age)) + geom_boxplot()
+  ggplot(aes(adm_age)) + geom_boxplot(fill = "lightblue", color = "darkblue") +
+  ggtitle("Distribution of Age for Patients Who Died within Thirty Days")
 mimic_icu_cohort %>% 
   filter(thirty_day_mort == 0) %>%
-  ggplot(aes(adm_age)) + geom_boxplot()
+  ggplot(aes(adm_age)) + geom_boxplot(fill = "lightblue", color = "darkblue") +
+  ggtitle("Distribution of Age for Patients Who Did Not Die within Thirty Days")
 ```
 
 
@@ -595,6 +599,9 @@ mimic_icu_cohort %>%
 ```{r}
 mimic_icu_cohort %>% 
   filter(thirty_day_mort == 1) %>%
-  ggplot(aes(first_careunit)) + geom_bar() + coord_flip()
+  ggplot(aes(first_careunit)) +
+  geom_bar(fill = "lightblue", color = "darkblue") +
+  coord_flip() +
+  ggtitle("Thirty Day Mortality by First ICU Unit")
 ```
 
