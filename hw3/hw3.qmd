@@ -111,14 +111,15 @@ patients_tble <-tbl(con, "patients") %>%
 
 6. Connect to the `labevents` table and retrieve a subset that only contain subjects who appear in `icustays_tble` and the lab items listed in HW2. 
 ```{r}
+d_labitems_tble <- tbl(con, "d_labitems") %>%
+  filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931)) %>%
+  show_query() %>%
+  print(width = Inf)
+```
+```{r}
 labevents_tble <- tbl(con, "labevents") %>%
   filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931)) %>%
   left_join(select(icustays_tble, subject_id, intime, outtime), "subject_id") %>%
-  show_query() %>%
-  print(width = Inf)
-
-d_labitems_tble <- tbl(con, "d_labitems") %>%
-  filter(itemid %in% c(50912, 50971, 50983, 50902, 50882, 51221, 51301, 50931)) %>%
   show_query() %>%
   print(width = Inf)
 ```
@@ -129,23 +130,17 @@ labevents_tble <- labevents_tble %>%
   group_by(subject_id, itemid) %>% 
   filter(charttime == min(charttime)) %>%
   select(-intime, -outtime, -charttime, -hadm_id) %>%
-  ungroup(subject_id, itemid) %>% 
-  distinct() %>%
-  pivot_wider(names_from = itemid, values_from = valuenum) %>%
-  rename_at(
-    vars(as.character(d_labitems_tble$itemid)), 
-    ~str_to_lower(d_labitems_tble$label)) %>%
+  ungroup(subject_id, itemid) %>%   
   show_query() %>%
   print(width = Inf)
 ```
 ```{r}
 labevents_tble <- labevents_tble %>%
- select(-intime, -outtime, -charttime, -hadm_id) %>%
-  ungroup(subject_id, itemid) %>% 
-  ungroup(subject_id, itemid) %>%
- 
- 
-  
+  select(subject_id, itemid, valuenum) %>%
+  left_join(select(d_labitems_tble, itemid, label), "itemid") %>%
+  select(-itemid) %>%
+  mutate(label = gsub(" ", "", label)) %>%
+  pivot_wider(names_from = label, values_from = valuenum) %>%
   show_query() %>%
   print(width = Inf)
 ```
