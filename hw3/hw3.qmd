@@ -185,6 +185,11 @@ if (!dir.exists("mimiciv_shiny")) {
 ```{r}
 # # TODO
 # icu_cohort <- icustays_tble %>% ...
+icustays_tble %>% 
+  left_join(admissions_tble, by = c("subject_id", "hadm_id")) %>%
+  left_join(patients_tble, by = c("subject_id")) %>%
+  show_query() %>%
+  print(width = Inf)
 ```
 
 Close database connection and clear workspace.
