@@ -183,11 +183,15 @@ if (!dir.exists("mimiciv_shiny")) {
 ```
 
 ```{r}
-# # TODO
-# icu_cohort <- icustays_tble %>% ...
-icustays_tble %>% 
+icu_cohort <- icustays_tble %>% 
   left_join(admissions_tble, by = c("subject_id", "hadm_id")) %>%
   left_join(patients_tble, by = c("subject_id")) %>%
+  mutate(adm_age = year(admittime) - anchor_year + anchor_age) %>%
+  filter(adm_age > 18) %>%
+  left_join(labevents_tble, by = "subject_id") %>%
+  left_join(chartevents_tble, by = "subject_id") %>%
+  mutate(thirty_day_mort = case_when(DATETIME_DIFF(admittime, dod, DAY)
+         <= 30 ~ TRUE, TRUE ~ FALSE)) %>%
   show_query() %>%
   print(width = Inf)
 ```
