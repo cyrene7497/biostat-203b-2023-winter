@@ -195,6 +195,10 @@ icu_cohort <- icustays_tble %>%
   show_query() %>%
   print(width = Inf)
 ```
+```{r}
+icu_cohort %>% 
+  saveRDS(file = "mimiciv_shiny/icu_cohort.rds")
+```
 
 Close database connection and clear workspace.
 ```{r, eval=F}
