@@ -197,6 +197,7 @@ icu_cohort <- icustays_tble %>%
 ```
 ```{r}
 icu_cohort %>% 
+  collect() %>%
   saveRDS(file = "mimiciv_shiny/icu_cohort.rds")
 ```
 
