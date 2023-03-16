@@ -24,7 +24,6 @@ knitr:
 Display machine information:
 ```{r}
 #| eval: true
-
 sessionInfo()
 ```
 Load database libraries and the tidyverse frontend:
@@ -35,6 +34,7 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(tidymodels))
 suppressPackageStartupMessages(library(lubridate))
 suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(gtsummary))
 ```
 
 ## Predicting 30-day mortality
@@ -46,9 +46,25 @@ icu_cohort <- readRDS("icu_cohort.rds") %>%
     -subject_id,
     -intime,
     -hadm_id,
-    -stay_id
+    -stay_id,
+    -last_careunit,
+    -outtime,
+    -los,
+    -admittime,
+    -dischtime,
+    -deathtime,
+    -discharge_location,
+    -edregtime,
+    -edouttime,
+    -hospital_expire_flag,
+    -anchor_age,
+    -anchor_year,
+    -anchor_year_group,
+    -dod,
+    -hadm_to_death
   ) %>%
   print(Width = Inf)
+icu_cohort %>% tbl_summary(by = thirty_day_mort)
 ```
 
 1. Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.
