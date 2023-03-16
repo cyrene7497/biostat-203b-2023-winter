@@ -23,28 +23,38 @@ knitr:
 
 Display machine information:
 ```{r}
-#| eval: false
+#| eval: true
 
 sessionInfo()
 ```
 Load database libraries and the tidyverse frontend:
 ```{r}
-#| eval: false
+#| eval: true
 
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(tidymodels))
 suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(dplyr))
 ```
 
 ## Predicting 30-day mortality
 
 Using the ICU cohort `icu_cohort.rds` you built in Homework 3, develop at least three analytic approaches for predicting the 30-day mortality of patients admitted to ICU using demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, and first vital measurements during ICU stay. For example, you can use (1) logistic regression with elastic net (lasso + ridge) penalty (e.g., glmnet or keras package), (2) random forest, (3) boosting, and (4) support vector machines, or (5) MLP neural network (keras package)
 ```{r}
-icu_cohort <- readRDS("icu_cohort.rds")
-head(icu_cohort)
+icu_cohort <- readRDS("icu_cohort.rds") %>%
+  select(
+    -subject_id,
+    -intime,
+    -hadm_id,
+    -stay_id
+  ) %>%
+  print(Width = Inf)
 ```
 
 1. Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.
+```{r}
+
+```
 
 2. Train and tune the models using the training set.
 
