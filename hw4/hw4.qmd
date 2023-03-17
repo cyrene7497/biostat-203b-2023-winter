@@ -99,6 +99,17 @@ data_split <- initial_split(
 data_split
 ```
 
+```{r}
+icu_other <- training(data_split)
+dim(icu_other)
+icu_test <- testing(data_split)
+dim(icu_test)
+```
+
+
 2. Train and tune the models using the training set.
+```{r}
+rf_recipe <- 
+```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
