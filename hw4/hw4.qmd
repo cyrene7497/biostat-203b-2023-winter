@@ -35,6 +35,7 @@ suppressPackageStartupMessages(library(tidymodels))
 suppressPackageStartupMessages(library(lubridate))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(gtsummary))
+suppressPackageStartupMessages(library(GGally))
 ```
 
 ## Predicting 30-day mortality
@@ -61,15 +62,41 @@ icu_cohort <- readRDS("icu_cohort.rds") %>%
     -anchor_year,
     -anchor_year_group,
     -dod,
-    -hadm_to_death
-  ) %>%
-  print(Width = Inf)
+    -hadm_to_death)
 icu_cohort %>% tbl_summary(by = thirty_day_mort)
+```
+```{r}
+cat_features <- c("first_careunit", "admission_type", "insurance","ethnicity",
+                  "gender")
+num_features <- c("age_hadm", "wbc", "glucose","heart_rate", "respiratory_rate")
+features <- c(cat_features, num_features)
+```
+```{r}
+icu_tbl <- icu_cohort %>%
+  select(features, thirty_day_mort) %>%
+  print(width = Inf)
+icu_tbl$first_careunit <- fct_lump_prop(icu_tbl$first_careunit, prop = 0.15, w = NULL, other_level = "Other")
+icu_tbl$admission_type <- fct_lump_prop(icu_tbl$admission_type, prop = 0.10, w = NULL, other_level = "Other")
+icu_tbl$ethnicity <- fct_lump_prop(icu_tbl$ethnicity, prop = 0.04, w = NULL, other_level = "Other")
+tbl_summary(icu_tbl, by = thirty_day_mort)
+```
+
+
+```{r}
+icu_tbl %>% ggpairs(columns = 1:5, ggplot2::aes(colour = thirty_day_mort))
+icu_tbl %>% ggpairs(columns = 6:10, ggplot2::aes(colour = thirty_day_mort))
 ```
 
 1. Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.
 ```{r}
-
+set.seed(203)
+    
+data_split <- initial_split(
+  icu_tbl,
+  #stratify by `thirty_day_mort`
+  prop = 0.5
+)
+data_split
 ```
 
 2. Train and tune the models using the training set.
