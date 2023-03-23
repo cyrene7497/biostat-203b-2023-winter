@@ -36,6 +36,8 @@ suppressPackageStartupMessages(library(lubridate))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(gtsummary))
 suppressPackageStartupMessages(library(GGally))
+suppressPackageStartupMessages(library(ranger))
+suppressPackageStartupMessages(library(xgboost))
 ```
 
 ## Predicting 30-day mortality
@@ -78,6 +80,7 @@ icu_tbl <- icu_cohort %>%
 icu_tbl$first_careunit <- fct_lump_prop(icu_tbl$first_careunit, prop = 0.15, w = NULL, other_level = "Other")
 icu_tbl$admission_type <- fct_lump_prop(icu_tbl$admission_type, prop = 0.10, w = NULL, other_level = "Other")
 icu_tbl$ethnicity <- fct_lump_prop(icu_tbl$ethnicity, prop = 0.04, w = NULL, other_level = "Other")
+icu_tbl$thirty_day_mort <- as.factor(icu_tbl$thirty_day_mort)
 tbl_summary(icu_tbl, by = thirty_day_mort)
 ```
 
@@ -123,7 +126,10 @@ rf_recipe <- recipe(
   step_impute_mean(heart_rate) %>%
   step_impute_mean(respiratory_rate) %>%
   # zero-variance filter on numerical predictors
-  step_zv(all_numeric_predictors()) %>% 
+  step_zv(all_numeric_predictors()) %>%
+  # step_dummy(all_nominal()) %>%
+  # step_normalize(all_numeric_predictors()) %>%
+  step_impute_linear(all_numeric_predictors()) %>%
   prep(training = icu_other, retrain = TRUE)
 rf_recipe
 ```
@@ -154,7 +160,46 @@ param_grid_rf <- grid_regular(
 param_grid_rf
 ```
 ```{r}
+#RF Cross Validation
+set.seed(203)
+folds <- vfold_cv(icu_other, v = 3)
+folds
 
+#Fit cross validation
+rf_fit <- rf_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid_rf,
+    metrics = metric_set(roc_auc, accuracy)
+  )
+rf_fit
+```
+```{r}
+#Visualize CV results
+rf_fit %>% collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = trees, y = mean, color = mtry)) +
+  geom_point()
+
+rf_fit %>% show_best("roc_auc")
+
+best_rf <- rf_fit %>% 
+  select_best("roc_auc")
+best_rf
 ```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
+```{r}
+#Final RF workflow
+final_wf <- rf_wf %>%
+  finalize_workflow(best_rf)
+final_wf
+
+final_fit_rf <- final_wf %>%
+  last_fit(data_split)
+final_fit_rf
+
+final_fit_rf %>% collect_metrics()
+```
+
