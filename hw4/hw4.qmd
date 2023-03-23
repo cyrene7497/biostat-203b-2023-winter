@@ -188,6 +188,87 @@ best_rf <- rf_fit %>%
   select_best("roc_auc")
 best_rf
 ```
+```{r}
+#Logistical Recipe
+logi_recipe <-
+  recipe(
+    thirty_day_mort ~ .,
+    data = icu_other
+  ) %>% 
+  #mode imputation for ethnicity (categorical) for missing/`Unknown` values
+  step_impute_mode(ethnicity) %>%
+  # mean imputation for `wbc`, `glucose`, `heart_rate`, and `respiratory rate`
+  # which have some but not many missing/unknown values
+  step_impute_mean(wbc) %>%
+  step_impute_mean(glucose) %>%
+  step_impute_mean(heart_rate) %>%
+  step_impute_mean(respiratory_rate) %>%
+  # zero-variance filter on numerical predictors
+  step_zv(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  prep(training = icu_other, retrain = TRUE)
+logi_recipe
+```
+```{r}
+#Logistic Model
+logi_model <- 
+  logistic_reg(
+   penalty = tune(),
+   mixture = tune()
+  ) %>%
+  set_engine("glmnet", standardize = FALSE)
+logi_model
+```
+```{r}
+#Logistic Workflow
+logi_wf <- workflow() %>%
+  add_recipe(logi_recipe) %>%
+  add_model(logi_model)
+logi_wf
+```
+```{r}
+#Logistic Tuning grid
+param_grid_l <- grid_regular(
+  penalty(range = c(-6,3)),
+  mixture(),
+  levels = c(100, 5)
+)
+param_grid_l
+```
+```{r}
+#Logistic Cross Validation using same folds as RF
+
+logi_fit <- logi_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid_l,
+    metrics = metric_set(roc_auc, accuracy)
+  )
+logi_fit
+```
+```{r}
+#Visualize Logistic Regression Results
+
+logi_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = penalty, y = mean, color = mixture)) +
+  geom_point() +
+  labs(x = "Penalty", y = "CV AUC") +
+  scale_x_log10()
+```
+```{r}
+#Top 5 Logistic Models
+logi_fit %>%
+  show_best("roc_auc")
+
+#Select the best
+best_logi <- logi_fit %>%
+  select_best("roc_auc")
+best_logi
+```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
 ```{r}
@@ -201,5 +282,19 @@ final_fit_rf <- final_wf %>%
 final_fit_rf
 
 final_fit_rf %>% collect_metrics()
+```
+```{r}
+#Final Logistic Workflow
+final_wf_l <- logi_wf %>%
+  finalize_workflow(best_logi)
+final_wf_l
+
+#Fit the whole training set, then predict the test cases
+final_fit_l <- final_wf_l %>%
+  last_fit(data_split)
+final_fit_l
+
+#Test metrics
+final_fit_l %>% collect_metrics()
 ```
 
