@@ -36,8 +36,7 @@ suppressPackageStartupMessages(library(lubridate))
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(gtsummary))
 suppressPackageStartupMessages(library(GGally))
-suppressPackageStartupMessages(library(ranger))
-suppressPackageStartupMessages(library(xgboost))
+suppressPackageStartupMessages(library(kernlab))
 ```
 
 ## Predicting 30-day mortality
@@ -268,6 +267,61 @@ logi_fit %>%
 best_logi <- logi_fit %>%
   select_best("roc_auc")
 best_logi
+```
+```{r}
+#SVM with RBF Kernel Recipe
+svm_recipe <- recipe(
+  thirty_day_mort ~ .,
+  data = icu_other
+) %>%
+  #mode imputation for ethnicity (categorical) for missing/`Unknown` values
+  step_impute_mode(ethnicity) %>%
+  # mean imputation for `wbc`, `glucose`, `heart_rate`, and `respiratory rate`
+  # which have some but not many missing/unknown values
+  step_impute_mean(wbc) %>%
+  step_impute_mean(glucose) %>%
+  step_impute_mean(heart_rate) %>%
+  step_impute_mean(respiratory_rate) %>%
+  # zero-variance filter on numerical predictors
+  step_zv(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  prep(training = icu_other, retrain = TRUE)
+svm_recipe
+
+#SVM Model
+svm_model <- svm_rbf(
+  mode = "classification",
+  cost = tune(),
+  rbf_sigma = tune()
+) %>% set_engine("kernlab")
+svm_model
+
+#SVM Workflow
+
+svm_wf <- workflow() %>%
+  add_recipe(svm_recipe) %>%
+  add_model(svm_model)
+svm_wf
+
+#SVM Tuning Grid
+
+param_grid_svm <- grid_regular(
+  cost(range = c(-8, 5)), 
+  rbf_sigma(range = c(-5, -3)),
+  levels = c(14, 5)
+)
+param_grid_svm
+```
+```{r}
+#SVM Cross Validation
+
+svm_fit <- svm_wf %>%
+  tune_grid(
+    resamples = folds,
+    metrics = metric_set(roc_auc, accuracy)
+  )
+svm_fit
 ```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
