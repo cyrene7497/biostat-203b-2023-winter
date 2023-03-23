@@ -372,6 +372,18 @@ final_fit_l
 final_fit_l %>% collect_metrics()
 ```
 ```{r}
+#Final SVM Workflow
+final_wf_svm <- svm_wf %>%
+  finalize_workflow(best_svm)
+final_wf_svm
 
+#Fit the whole training set with SVM, then predict
+final_fit_svm <- final_wf_svm %>%
+  last_fit(data_split)
+final_fit_svm
+
+#Test Metrics
+final_fit_svm %>%
+  collect_metrics()
 ```
 
