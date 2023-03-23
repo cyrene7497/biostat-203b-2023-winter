@@ -323,6 +323,16 @@ svm_fit <- svm_wf %>%
   )
 svm_fit
 ```
+```{r}
+#Visualize SVM CV Results
+svm_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>% 
+  ggplot(mapping = aes(x = cost, y = mean, alpha = rbf_sigma)) + 
+  geom_point() + 
+  labs(x = "Cost", y = "CV AUC") + scale_x_log10()
+```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
 ```{r}
