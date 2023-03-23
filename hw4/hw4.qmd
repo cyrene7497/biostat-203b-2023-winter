@@ -1,0 +1,412 @@
+---
+title: "Biostat 203B Homework 4"
+subtitle: Due Mar 24 @ 11:59PM
+author: Cyrene Arputhasamy (UID: 705527395)
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    number-sections: true
+    toc: true
+    toc-depth: 4
+    toc-location: left
+    code-fold: false
+knitr:
+  opts_chunk: 
+    cache: false    
+    echo: true
+    fig.align: 'center'
+    fig.width: 6
+    fig.height: 4
+    message: FALSE
+---
+
+Display machine information:
+```{r}
+#| eval: true
+sessionInfo()
+```
+Load database libraries and the tidyverse frontend:
+```{r}
+#| eval: true
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(tidymodels))
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(gtsummary))
+suppressPackageStartupMessages(library(GGally))
+suppressPackageStartupMessages(library(kernlab))
+suppressPackageStartupMessages(library(ranger))
+```
+
+## Predicting 30-day mortality
+
+Using the ICU cohort `icu_cohort.rds` you built in Homework 3, develop at least 
+three analytic approaches for predicting the 30-day mortality of patients 
+admitted to ICU using demographic information (gender, age, marital status, 
+ethnicity), first lab measurements during ICU stay, and first vital measurements
+during ICU stay. For example, you can use (1) logistic regression with elastic 
+net (lasso + ridge) penalty (e.g., glmnet or keras package), (2) random forest, 
+(3) boosting, and (4) support vector machines, or (5) MLP neural network 
+(keras package).
+
+```{r}
+icu_cohort <- readRDS("icu_cohort.rds") %>%
+  select(
+    -subject_id,
+    -intime,
+    -hadm_id,
+    -stay_id,
+    -last_careunit,
+    -outtime,
+    -los,
+    -admittime,
+    -dischtime,
+    -deathtime,
+    -discharge_location,
+    -edregtime,
+    -edouttime,
+    -hospital_expire_flag,
+    -anchor_age,
+    -anchor_year,
+    -anchor_year_group,
+    -dod,
+    -hadm_to_death)
+icu_cohort %>% tbl_summary(by = thirty_day_mort)
+```
+```{r}
+# Choose features we're interested in including in the model
+cat_features <- c("first_careunit", "admission_type", "insurance","ethnicity",
+                  "gender")
+num_features <- c("age_hadm", "wbc", "glucose","heart_rate", "respiratory_rate")
+features <- c(cat_features, num_features)
+```
+```{r}
+icu_tbl <- icu_cohort %>%
+  select(features, thirty_day_mort) %>%
+  print(width = Inf)
+
+# Many categorical variables have too many minor levels, so combine levels into 
+# "Other" category by proportion
+
+icu_tbl$first_careunit <- fct_lump_prop(icu_tbl$first_careunit, prop = 0.15, 
+                                        w = NULL, other_level = "Other")
+icu_tbl$admission_type <- fct_lump_prop(icu_tbl$admission_type, prop = 0.10, 
+                                        w = NULL, other_level = "Other")
+icu_tbl$ethnicity <- fct_lump_prop(icu_tbl$ethnicity, prop = 0.04, w = NULL, 
+                                   other_level = "Other")
+icu_tbl$thirty_day_mort <- as.factor(icu_tbl$thirty_day_mort)
+tbl_summary(icu_tbl, by = thirty_day_mort)
+```
+
+
+```{r}
+# Visualize data by thirty_day_mort
+
+icu_tbl %>% ggpairs(columns = 1:5, ggplot2::aes(colour = thirty_day_mort))
+icu_tbl %>% ggpairs(columns = 6:10, ggplot2::aes(colour = thirty_day_mort))
+```
+
+1. Partition data into 50% training set and 50% test set. Stratify partitioning 
+according the 30-day mortality status.
+```{r}
+set.seed(203)
+    
+data_split <- initial_split(
+  icu_tbl,
+  #stratify by `thirty_day_mort`
+  prop = 0.5
+)
+data_split
+```
+
+```{r}
+icu_other <- training(data_split)
+dim(icu_other)
+icu_test <- testing(data_split)
+dim(icu_test)
+```
+
+
+2. Train and tune the models (random forest, logistic regression with e-net 
+regularization, SVM with radial basis kernel) using the training set.
+```{r}
+# Random forest recipe
+rf_recipe <- recipe(
+  thirty_day_mort ~.,
+  data = icu_other
+) %>%
+  # mode imputation for ethnicity (categorical) for missing/`Unknown` values
+  step_impute_mode(ethnicity) %>%
+  # mean imputation for `wbc`, `glucose`, `heart_rate`, and `respiratory rate`
+  # which have some but not many missing/unknown values
+  step_impute_mean(wbc) %>%
+  step_impute_mean(glucose) %>%
+  step_impute_mean(heart_rate) %>%
+  step_impute_mean(respiratory_rate) %>%
+  # zero-variance filter on numerical predictors
+  step_zv(all_numeric_predictors()) %>%
+  step_impute_linear(all_numeric_predictors()) %>%
+  prep(training = icu_other, retrain = TRUE)
+rf_recipe
+
+# Random forest model
+rf_mod <- rand_forest(
+  mode = "classification",
+  mtry = tune(),
+  trees = tune()
+) %>%
+  set_engine("ranger")
+rf_mod
+
+# Random forest workflow
+rf_wf <- workflow() %>%
+  add_recipe(rf_recipe) %>%
+  add_model(rf_mod)
+rf_wf
+
+# Random forest tuning
+param_grid_rf <- grid_regular(
+  trees(range = c(100L, 300L)),
+  mtry(range = c(1L, 5L)),
+  levels = c(3, 5)
+)
+param_grid_rf
+```
+
+```{r}
+# RF Cross Validation
+set.seed(203)
+folds <- vfold_cv(icu_other, v = 5)
+folds
+
+# RF Fit cross validation
+system.time({
+  rf_fit <- rf_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid_rf,
+    metrics = metric_set(roc_auc, accuracy)
+  )
+})
+
+rf_fit
+```
+```{r}
+# Visualize random forest cross validation results
+rf_fit %>% collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = trees, y = mean, color = mtry)) +
+  geom_point()
+
+rf_fit %>% show_best("roc_auc")
+
+best_rf <- rf_fit %>% 
+  select_best("roc_auc")
+best_rf
+```
+```{r}
+# Logistical recipe
+logi_recipe <-
+  recipe(
+    thirty_day_mort ~ .,
+    data = icu_other
+  ) %>% 
+  #mode imputation for ethnicity (categorical) for missing/`Unknown` values
+  step_impute_mode(ethnicity) %>%
+  # mean imputation for `wbc`, `glucose`, `heart_rate`, and `respiratory rate`
+  # which have some but not many missing/unknown values
+  step_impute_mean(wbc) %>%
+  step_impute_mean(glucose) %>%
+  step_impute_mean(heart_rate) %>%
+  step_impute_mean(respiratory_rate) %>%
+  # zero-variance filter on numerical predictors
+  step_zv(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  prep(training = icu_other, retrain = TRUE)
+logi_recipe
+
+# Logistic model
+logi_model <- 
+  logistic_reg(
+   penalty = tune(),
+   mixture = tune()
+  ) %>%
+  set_engine("glmnet", standardize = FALSE)
+logi_model
+
+# Logistic workflow
+logi_wf <- workflow() %>%
+  add_recipe(logi_recipe) %>%
+  add_model(logi_model)
+logi_wf
+
+# Logistic tuning grid
+param_grid_l <- grid_regular(
+  penalty(range = c(-6,3)),
+  mixture(),
+  levels = c(100, 5)
+)
+param_grid_l
+```
+
+```{r}
+# Logistic Cross Validation using same folds as RF
+system.time({
+  logi_fit <- logi_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid_l,
+    metrics = metric_set(roc_auc, accuracy)
+  )
+})
+logi_fit
+```
+```{r}
+# Visualize logistic regression results
+logi_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = penalty, y = mean, color = mixture)) +
+  geom_point() +
+  labs(x = "Penalty", y = "CV AUC") +
+  scale_x_log10()
+```
+```{r}
+# Top 5 Logistic Models
+logi_fit %>%
+  show_best("roc_auc")
+
+# Select the best
+best_logi <- logi_fit %>%
+  select_best("roc_auc")
+best_logi
+```
+```{r}
+# SVM with RBF kernel recipe
+svm_recipe <- recipe(
+  thirty_day_mort ~ .,
+  data = icu_other
+) %>%
+  #mode imputation for ethnicity (categorical) for missing/`Unknown` values
+  step_impute_mode(ethnicity) %>%
+  # mean imputation for `wbc`, `glucose`, `heart_rate`, and `respiratory rate`
+  # which have some but not many missing/unknown values
+  step_impute_mean(wbc) %>%
+  step_impute_mean(glucose) %>%
+  step_impute_mean(heart_rate) %>%
+  step_impute_mean(respiratory_rate) %>%
+  # zero-variance filter on numerical predictors
+  step_zv(all_numeric_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  prep(training = icu_other, retrain = TRUE)
+svm_recipe
+
+# SVM model
+svm_model <- svm_rbf(
+  mode = "classification",
+  cost = tune(),
+  rbf_sigma = tune()
+) %>% set_engine("kernlab")
+svm_model
+
+# SVM workflow
+
+svm_wf <- workflow() %>%
+  add_recipe(svm_recipe) %>%
+  add_model(svm_model)
+svm_wf
+
+# SVM tuning Grid
+
+param_grid_svm <- grid_regular(
+  cost(range = c(-8, 5)), 
+  rbf_sigma(range = c(-5, -3)),
+  levels = c(14, 5)
+)
+param_grid_svm
+```
+```{r}
+# SVM Cross Validation
+system.time({
+  svm_fit <- svm_wf %>%
+  tune_grid(
+    resamples = folds,
+    metrics = metric_set(roc_auc, accuracy)
+  )
+})
+svm_fit
+```
+```{r}
+# Visualize SVM CV Results
+svm_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>% 
+  ggplot(mapping = aes(x = cost, y = mean, alpha = rbf_sigma)) + 
+  geom_point() + 
+  labs(x = "Cost", y = "CV AUC") + scale_x_log10()
+```
+```{r}
+# Show top 5 SVM Models
+svm_fit %>%
+  show_best("roc_auc")
+
+# Select best SVM model
+best_svm <- svm_fit %>%
+  select_best("roc_auc")
+best_svm
+```
+
+3. Compare model classification performance on the test set. Report both the 
+area under ROC curve and accuracy for each model.
+```{r}
+#Final RF workflow
+final_wf <- rf_wf %>%
+  finalize_workflow(best_rf)
+final_wf
+
+final_fit_rf <- final_wf %>%
+  last_fit(data_split)
+final_fit_rf
+
+final_fit_rf %>% collect_metrics()
+```
+```{r}
+#Final Logistic Workflow
+final_wf_l <- logi_wf %>%
+  finalize_workflow(best_logi)
+final_wf_l
+
+#Fit the whole training set, then predict the test cases
+final_fit_l <- final_wf_l %>%
+  last_fit(data_split)
+final_fit_l
+
+#Test metrics
+final_fit_l %>% collect_metrics()
+```
+```{r}
+#Final SVM Workflow
+final_wf_svm <- svm_wf %>%
+  finalize_workflow(best_svm)
+final_wf_svm
+
+#Fit the whole training set with SVM, then predict
+final_fit_svm <- final_wf_svm %>%
+  last_fit(data_split)
+final_fit_svm
+
+#Test Metrics
+final_fit_svm %>%
+  collect_metrics()
+```
+The random forest method and logistical regression methods of classification 
+seem to be better than SVM method. Random forest has the highest ROC, but not 
+significantly higher than that of the logistical method. Random forest and 
+logistical regression also had the shortest run time. 
