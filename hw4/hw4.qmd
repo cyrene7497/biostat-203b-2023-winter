@@ -109,7 +109,52 @@ dim(icu_test)
 
 2. Train and tune the models using the training set.
 ```{r}
-rf_recipe <- 
+#Random Forest Recipe
+rf_recipe <- recipe(
+  thirty_day_mort ~.,
+  data = icu_other
+) %>%
+  #mode imputation for ethnicity (categorical) for missing/`Unknown` values
+  step_impute_mode(ethnicity) %>%
+  # mean imputation for `wbc`, `glucose`, `heart_rate`, and `respiratory rate`
+  # which have some but not many missing/unknown values
+  step_impute_mean(wbc) %>%
+  step_impute_mean(glucose) %>%
+  step_impute_mean(heart_rate) %>%
+  step_impute_mean(respiratory_rate) %>%
+  # zero-variance filter on numerical predictors
+  step_zv(all_numeric_predictors()) %>% 
+  prep(training = icu_other, retrain = TRUE)
+rf_recipe
+```
+```{r}
+#Random Forest Model
+rf_mod <- rand_forest(
+  mode = "classification",
+  mtry = tune(),
+  trees = tune()
+) %>%
+  set_engine("ranger")
+rf_mod
+```
+```{r}
+#Random Forest workflow
+rf_wf <- workflow() %>%
+  add_recipe(rf_recipe) %>%
+  add_model(rf_mod)
+rf_wf
+```
+```{r}
+#Random Forest Tuning
+param_grid_rf <- grid_regular(
+  trees(range = c(100L, 300L)),
+  mtry(range = c(1L, 5L)),
+  levels = c(3, 5)
+)
+param_grid_rf
+```
+```{r}
+
 ```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
