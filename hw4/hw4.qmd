@@ -333,6 +333,16 @@ svm_fit %>%
   geom_point() + 
   labs(x = "Cost", y = "CV AUC") + scale_x_log10()
 ```
+```{r}
+#Show top 5 SVM Models
+svm_fit %>%
+  show_best("roc_auc")
+
+#Select best SVM model
+best_svm <- svm_fit %>%
+  select_best("roc_auc")
+best_svm
+```
 
 3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
 ```{r}
@@ -360,5 +370,8 @@ final_fit_l
 
 #Test metrics
 final_fit_l %>% collect_metrics()
+```
+```{r}
+
 ```
 
